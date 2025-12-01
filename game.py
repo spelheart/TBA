@@ -1,3 +1,4 @@
+
 # Description: Game class
 
 # Import modules
@@ -15,12 +16,14 @@ class Game:
         self.rooms = []
         self.commands = {}
         self.player = None
+        self.actions = Actions()
     
     # Setup the game
     def setup(self):
+        # Initialise les directions alias
+        self.actions.setup()
 
         # Setup commands
-
         help = Command("help", " : afficher cette aide", Actions.help, 0)
         self.commands["help"] = help
         quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
@@ -29,12 +32,11 @@ class Game:
         self.commands["go"] = go
         
         # Setup rooms
-
-        forest = Room("Forest", "une forêt enchantée. Vous entendez une brise légère à travers la cime des arbres.")
+        forest = Room("Forest", "dans une forêt enchantée. Vous entendez une brise légère à travers la cime des arbres.")
         self.rooms.append(forest)
         tower = Room("Tower", "une immense tour en pierre qui s'élève au dessus des nuages.")
         self.rooms.append(tower)
-        cave = Room("Cave", "une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
+        cave = Room("Cave", " une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
         self.rooms.append(cave)
         cottage = Room("Cottage", "un petit chalet pittoresque avec un toit de chaume. Une épaisse fumée verte sort de la cheminée.")
         self.rooms.append(cottage)
@@ -44,7 +46,7 @@ class Game:
         self.rooms.append(castle)
 
         # Create exits for rooms
-
+        
         forest.exits = {"N" : cave, "E" : None, "S" : castle, "O" : None}
         tower.exits = {"N" : cottage, "E" : None, "S" : None, "O" : None}
         cave.exits = {"N" : None, "E" : cottage, "S" : forest, "O" : None}
@@ -53,7 +55,6 @@ class Game:
         castle.exits = {"N" : forest, "E" : swamp, "S" : None, "O" : None}
 
         # Setup player and starting room
-
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = swamp
 
@@ -88,7 +89,7 @@ class Game:
         print(f"\nBienvenue {self.player.name} dans ce jeu d'aventure !")
         print("Entrez 'help' si vous avez besoin d'aide.")
         #
-        print(self.player.current_room.get_long_description())
+        print(self.player.current_room.get_long_description()) 
     
 
 def main():

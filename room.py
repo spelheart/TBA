@@ -1,3 +1,4 @@
+
 # Define the Room class.
 
 class Room:
@@ -29,3 +30,5 @@ class Room:
     # Return a long description of this room including exits.
     def get_long_description(self):
         return f"\nVous êtes dans {self.description}\n\n{self.get_exit_string()}\n"
+    
+
