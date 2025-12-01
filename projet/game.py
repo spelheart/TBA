@@ -16,12 +16,14 @@ class Game:
         self.rooms = []
         self.commands = {}
         self.player = None
+        self.actions = Actions()
     
     # Setup the game
     def setup(self):
+        # Initialise les directions alias
+        self.actions.setup()
 
         # Setup commands
-
         help = Command("help", " : afficher cette aide", Actions.help, 0)
         self.commands["help"] = help
         quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
@@ -30,7 +32,6 @@ class Game:
         self.commands["go"] = go
         
         # Setup rooms
-
         forest = Room("Forest", "dans une forêt enchantée. Vous entendez une brise légère à travers la cime des arbres.")
         self.rooms.append(forest)
         tower = Room("Tower", "une immense tour en pierre qui s'élève au dessus des nuages.")
@@ -45,16 +46,15 @@ class Game:
         self.rooms.append(castle)
 
         # Create exits for rooms
-
-        forest.exits = {"N" : cave, "E" : tower, "S" : castle, "O" : None}
-        tower.exits = {"N" : cottage, "E" : None, "S" : swamp, "O" : forest}
+        
+        forest.exits = {"N" : cave, "E" : None, "S" : castle, "O" : None}
+        tower.exits = {"N" : cottage, "E" : None, "S" : None, "O" : None}
         cave.exits = {"N" : None, "E" : cottage, "S" : forest, "O" : None}
         cottage.exits = {"N" : None, "E" : None, "S" : tower, "O" : cave}
         swamp.exits = {"N" : tower, "E" : None, "S" : None, "O" : castle}
         castle.exits = {"N" : forest, "E" : swamp, "S" : None, "O" : None}
 
         # Setup player and starting room
-
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = swamp
 
