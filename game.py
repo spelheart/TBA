@@ -32,33 +32,33 @@ class Game:
         self.commands["go"] = go
         
         # Setup rooms
-        hall_entree = Room("Hall d'entrée", "une forêt enchantée. Vous entendez une brise légère à travers la cime des arbres.")
+        hall_entree = Room("Hall d'entrée", "le hall d'entrée du lycée, où des casiers métalliques sont installés pour y ranger vos chaussures d’extérieur. ")
         self.rooms.append(hall_entree)
-        couloir1 = Room("Premier couloir", "une immense tour en pierre qui s'élève au dessus des nuages.")
+        couloir1 = Room("Premier couloir", "la première parite du couloir qui mène à la cafétéria, au couloir menant au gymnase ou au hall d'entrée. Tu peux aussi plus loin dans le couloir et il y aura d'autres salles, j'espère que t'es assez intelligent pour t'en douter tout seul hein.")
         self.rooms.append(couloir1)
-        salle1 = Room("Salle de cours tout ce qu'il y a de plus banal", "une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
+        salle1 = Room("Salle de cours tout ce qu'il y a de plus banal", "une salle de cours, tout ce qu'il y a de plus banal. Y'a un placard à balais dans un coin, mais sinon rien d'intéressant.")
         self.rooms.append(salle1)
-        salle2 = Room("Salle de cours tout ce qu'il y a de plus banal", "une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
+        salle2 = Room("Salle de cours tout ce qu'il y a de plus banal", "une salle de cours, pas forcèment très interressante, mais bon... faut bien travailler de temps en temps.")
         self.rooms.append(salle2)
-        musique = Room("Salle de musique", "une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
+        musique = Room("Salle de musique", "la salle de musique. Vous observez au milieu de la pièce un piano, un piano à queue plus précisément. Pas n'importe quel piano à queue, un piano Steinway & Sons Model D-274, le nec plus ultra des pianos à queue. Après y'a aussi une guitare et une batterie mais bon... on s'en fout un peu non ?")
         self.rooms.append(musique)
-        art = Room("Salle d'art plastique", "une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
+        art = Room("Salle d'art plastique", ".")
         self.rooms.append(art)
-        couloir2 = Room("Suite du couloir", "un petit chalet pittoresque avec un toit de chaume. Une épaisse fumée verte sort de la cheminée.")
+        couloir2 = Room("Suite du couloir", ".")
         self.rooms.append(couloir2)
-        couloir3 = Room("Fin du couloir", "un marécage sombre et ténébreux. L'eau bouillonne, les abords sont vaseux.")
+        couloir3 = Room("Fin du couloir", ".")
         self.rooms.append(couloir3)
-        escalier = Room("Escalier menant au toit", "un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
+        escalier = Room("Escalier menant au toit", ".")
         self.rooms.append(escalier)
-        toit = Room("toit énorme de 70 m^2", "un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
+        toit = Room("toit énorme de 70 m^2", ".")
         self.rooms.append(toit)
-        entree = Room("Entrée de l'école", "un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
+        entree = Room("Entrée de l'école", ".")
         self.rooms.append(entree)
-        couloir_sport = Room("Couloir menant au gymnase", "un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
+        couloir_sport = Room("couloir menant au gymnase", ".")
         self.rooms.append(couloir_sport)
-        gym = Room("Castle", "un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
+        gym = Room("Castle", ".")
         self.rooms.append(gym)
-        cafet = Room("Cafétéria", "un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
+        cafet = Room("Cafétéria", ".")
         self.rooms.append(cafet)
         
     
@@ -82,6 +82,8 @@ class Game:
         # Setup player and starting room
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = entree
+        # Initialize the history with the starting room
+        self.player.history.append(self.player.current_room)
 
     # Play the game
     def play(self):

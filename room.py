@@ -8,6 +8,8 @@ class Room:
         self.name = name
         self.description = description
         self.exits = {}
+        # Inventory: list chosen to hold Item objects (allows duplicates and ordered traversal)
+        self.inventory = {}
     
     # Define the get_exit method.
     def get_exit(self, direction):
