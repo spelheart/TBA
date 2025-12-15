@@ -16,47 +16,74 @@ class Game:
         self.rooms = []
         self.commands = {}
         self.player = None
+        self.actions = Actions()
     
     # Setup the game
     def setup(self):
+        # Initialise les directions alias
+        self.actions.setup()
 
         # Setup commands
-
         help = Command("help", " : afficher cette aide", Actions.help, 0)
         self.commands["help"] = help
         quit = Command("quit", " : quitter le jeu", Actions.quit, 0)
         self.commands["quit"] = quit
         go = Command("go", " <direction> : se déplacer dans une direction cardinale (N, E, S, O)", Actions.go, 1)
         self.commands["go"] = go
+        back = Command("back", " : revenir à la pièce précédente", Actions.back, 0)
+        self.commands["back"] = back
         
         # Setup rooms
-
-        forest = Room("Forest", "dans une forêt enchantée. Vous entendez une brise légère à travers la cime des arbres.")
-        self.rooms.append(forest)
-        tower = Room("Tower", "une immense tour en pierre qui s'élève au dessus des nuages.")
-        self.rooms.append(tower)
-        cave = Room("Cave", " une grotte profonde et sombre. Des voix semblent provenir des profondeurs.")
-        self.rooms.append(cave)
-        cottage = Room("Cottage", "un petit chalet pittoresque avec un toit de chaume. Une épaisse fumée verte sort de la cheminée.")
-        self.rooms.append(cottage)
-        swamp = Room("Swamp", "un marécage sombre et ténébreux. L'eau bouillonne, les abords sont vaseux.")
-        self.rooms.append(swamp)
-        castle = Room("Castle", "un énorme château fort avec des douves et un pont levis. Sur les tours, des flèches en or massif.")
-        self.rooms.append(castle)
-
+        hall_entree = Room("Hall d'entrée", "le hall d'entrée du lycée, où des casiers métalliques sont installés pour y ranger vos chaussures d’extérieur. ")
+        self.rooms.append(hall_entree)
+        couloir1 = Room("Premier couloir", "la première parite du couloir qui mène à la cafétéria, au couloir menant au gymnase ou au hall d'entrée. Tu peux aussi plus loin dans le couloir et il y aura d'autres salles, j'espère que t'es assez intelligent pour t'en douter tout seul hein.")
+        self.rooms.append(couloir1)
+        salle1 = Room("Salle de cours tout ce qu'il y a de plus banal", "une salle de cours, tout ce qu'il y a de plus banal. Y'a un placard à balais dans un coin, mais sinon rien d'intéressant.")
+        self.rooms.append(salle1)
+        salle2 = Room("Salle de cours tout ce qu'il y a de plus banal", "une salle de cours, pas forcèment très interressante, mais bon... faut bien travailler de temps en temps.")
+        self.rooms.append(salle2)
+        musique = Room("Salle de musique", "la salle de musique. Vous observez au milieu de la pièce un piano, un piano à queue plus précisément. Pas n'importe quel piano à queue, un piano Steinway & Sons Model D-274, le nec plus ultra des pianos à queue. Après y'a aussi une guitare et une batterie mais bon... on s'en fout un peu non ?")
+        self.rooms.append(musique)
+        art = Room("Salle d'art plastique", ".")
+        self.rooms.append(art)
+        couloir2 = Room("Suite du couloir", ".")
+        self.rooms.append(couloir2)
+        couloir3 = Room("Fin du couloir", ".")
+        self.rooms.append(couloir3)
+        escalier = Room("Escalier menant au toit", ".")
+        self.rooms.append(escalier)
+        toit = Room("toit énorme de 70 m^2", ".")
+        self.rooms.append(toit)
+        entree = Room("Entrée de l'école", ".")
+        self.rooms.append(entree)
+        couloir_sport = Room("couloir menant au gymnase", ".")
+        self.rooms.append(couloir_sport)
+        gym = Room("Castle", ".")
+        self.rooms.append(gym)
+        cafet = Room("Cafétéria", ".")
+        self.rooms.append(cafet)
+        
+    
         # Create exits for rooms
 
-        forest.exits = {"N" : cave, "E" : tower, "S" : castle, "O" : None}
-        tower.exits = {"N" : cottage, "E" : None, "S" : swamp, "O" : forest}
-        cave.exits = {"N" : None, "E" : cottage, "S" : forest, "O" : None}
-        cottage.exits = {"N" : None, "E" : None, "S" : tower, "O" : cave}
-        swamp.exits = {"N" : tower, "E" : None, "S" : None, "O" : castle}
-        castle.exits = {"N" : forest, "E" : swamp, "S" : None, "O" : None}
+        hall_entree.exits = {"N" : None, "E" : couloir1, "S" : None, "O" : entree, "M" : None, "D" : None}
+        salle2.exits = {"N" : couloir2, "E" : None, "S" : None, "O" : None, "M" : None, "D" : None}
+        salle1.exits = {"N" : None, "E" : None, "S" : couloir2, "O" : None, "M" : None, "D" : None}
+        couloir1.exits = {"N" : cafet, "E" : couloir2, "S" : couloir_sport, "O" : hall_entree, "M" : None, "D" : None}
+        couloir2.exits = {"N" : salle1, "E" : couloir3, "S" : salle2, "O" : couloir1, "M" : None, "D" : None}
+        couloir3.exits = {"N" : art, "E" : escalier, "S" : musique, "O" : couloir2, "M" : None, "D" : None}
+        entree.exits = {"N" : None, "E" : hall_entree, "S" : None, "O" : None, "M" : None, "D" : None}
+        escalier.exits = {"N" : None, "E" : None, "S" : None, "O" : couloir3, "M" : toit, "D" : None}
+        toit.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "M" : None, "D" : escalier}
+        couloir_sport.exits = {"N" : couloir1, "E" : None, "S" : gym, "O" : None, "M" : None, "D" : None}
+        gym.exits = {"N" : couloir_sport, "E" : None, "S" : None, "O" : None, "M" : None, "D" : None}
+        art.exits = {"N" : None, "E" : None, "S" : couloir3, "O" : None, "M" : None, "D" : None}
+        musique.exits = {"N" : couloir3, "E" : None, "S" : None, "O" : None, "M" : None, "D" : None}
+        cafet.exits = {"N" : None, "E" : None, "S" : couloir1, "O" : None, "M" : None, "D" : None}
 
         # Setup player and starting room
-
         self.player = Player(input("\nEntrez votre nom: "))
-        self.player.current_room = swamp
+        self.player.current_room = entree
 
     # Play the game
     def play(self):
