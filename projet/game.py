@@ -7,6 +7,7 @@ from room import Room
 from player import Player
 from command import Command
 from actions import Actions
+from item import Item
 
 class Game:
 
@@ -32,6 +33,14 @@ class Game:
         self.commands["go"] = go
         back = Command("back", " : revenir à la pièce précédente", Actions.back, 0)
         self.commands["back"] = back
+        look = Command("look", " : afficher les items présents dans la pièce courante", Actions.look, 0)
+        self.commands["look"] = look
+        take = Command("take", " <item> : ramasser un item présent dans la pièce", Actions.take, 1)
+        self.commands["take"] = take
+        drop = Command("drop", " <item> : déposer un item de votre inventaire dans la pièce", Actions.drop, 1)
+        self.commands["drop"] = drop
+        check = Command("check", " : afficher votre inventaire", Actions.check, 0)
+        self.commands["check"] = check
         
         # Setup rooms
         hall_entree = Room("Hall d'entrée", "le hall d'entrée du lycée, où des casiers métalliques sont installés pour y ranger vos chaussures d’extérieur. ")
@@ -80,6 +89,13 @@ class Game:
         art.exits = {"N" : None, "E" : None, "S" : couloir3, "O" : None, "M" : None, "D" : None}
         musique.exits = {"N" : couloir3, "E" : None, "S" : None, "O" : None, "M" : None, "D" : None}
         cafet.exits = {"N" : None, "E" : None, "S" : couloir1, "O" : None, "M" : None, "D" : None}
+
+        # Add items to the hall d'entrée so they are visible via Room.get_inventory()
+        casier = Item("casier", "un casier métallique verrouillé, idéal pour y ranger ses affaires", 20)
+        sword = Item("sword", "une épée au fil tranchant comme un rasoir", 2)
+        # store items by name in the room inventory dict
+        hall_entree.inventory[casier.name] = casier
+        hall_entree.inventory[sword.name] = sword
 
         # Setup player and starting room
         self.player = Player(input("\nEntrez votre nom: "))

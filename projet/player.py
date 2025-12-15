@@ -2,11 +2,21 @@
 class Player():
 
     # Define the constructor.
-    def __init__(self, name):
+    def __init__(self, name, max_weight: float = 20.0):
         self.name = name
         self.current_room = None
         self.history = []
+        # Inventory stored as name->Item
         self.inventory = {}
+        # Maximum weight the player can carry (kg)
+        self.max_weight = max_weight
+
+    def get_current_weight(self) -> float:
+        """Return the total weight of items currently carried by the player."""
+        try:
+            return sum(getattr(it, 'weight', 0) for it in self.inventory.values())
+        except Exception:
+            return 0.0
     
     # Define the move method.
     def move(self, direction):

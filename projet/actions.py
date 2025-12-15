@@ -182,3 +182,117 @@ class Actions:
         print(player.current_room.get_long_description())
         print(player.get_history())
         return True
+    def look(game, list_of_words, number_of_parameters):
+        """Affiche les items présents dans la pièce courante.
+        Usage: `look` (aucun paramètre)
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        player = game.player
+        room = player.current_room
+        # Use Room.get_inventory() if available
+        try:
+            inv_str = room.get_inventory()
+        except Exception:
+            # Fallback: try to print raw inventory
+            try:
+                inv_str = str(getattr(room, 'inventory', {}))
+            except Exception:
+                inv_str = "Il n'y a rien ici."
+
+        print(inv_str)
+        return True
+    
+    def take(game, list_of_words, number_of_parameters):
+        """Permet au joueur de ramasser un item dans la pièce courante.
+        Usage: `take <item_name>`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        item_name = list_of_words[1]
+        player = game.player
+        room = player.current_room
+
+        # Check if the item is in the room's inventory
+        if item_name not in room.inventory:
+            print(f"\nIl n'y a pas d'item nommé '{item_name}' ici.\n")
+            return False
+
+        # Check weight capacity before taking
+        item = room.inventory.get(item_name)
+        item_weight = getattr(item, 'weight', 0)
+        current = 0
+        try:
+            current = player.get_current_weight()
+        except Exception:
+            # fallback: compute from inventory
+            try:
+                current = sum(getattr(it, 'weight', 0) for it in player.inventory.values())
+            except Exception:
+                current = 0
+
+        if current + item_weight > getattr(player, 'max_weight', 0):
+            print(f"\nVous ne pouvez pas porter {item_name} ({item_weight} kg). Capacité restante: {max(0, getattr(player, 'max_weight',0) - current)} kg.\n")
+            return False
+
+        # Remove the item from the room and add it to the player's inventory
+        item = room.inventory.pop(item_name)
+        player.inventory[item_name] = item
+        print(f"\nVous avez ramassé : {item}\n")
+        return True
+    
+    def check(game, list_of_words, number_of_parameters):
+        """Affiche l'inventaire du joueur.
+        Usage: `check` (aucun paramètre)
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        player = game.player
+        try:
+            inv_str = player.get_inventory()
+        except Exception:
+            try:
+                inv_str = str(getattr(player, 'inventory', {}))
+            except Exception:
+                inv_str = "Votre inventaire est vide."
+
+        print(inv_str)
+        return True
+    
+    def drop(game, list_of_words, number_of_parameters):
+        """Permet au joueur de déposer un item de son inventaire dans la pièce courante.
+        Usage: `drop <item_name>`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        item_name = list_of_words[1]
+        player = game.player
+        room = player.current_room
+
+        # Check if the item is in the player's inventory
+        if item_name not in player.inventory:
+            print(f"\nVous n'avez pas d'item nommé '{item_name}' dans votre inventaire.\n")
+            return False
+
+        # Remove the item from the player's inventory and add it to the room's inventory
+        item = player.inventory.pop(item_name)
+        room.inventory[item_name] = item
+        print(f"\nVous avez déposé : {item}\n")
+        return True
+    
