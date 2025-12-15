@@ -52,12 +52,14 @@ class Actions:
                 break
 
         if direction_norm is None:
-            print(f"\n cherie t'y es contre sens, dirait sch donc'{user_input}' est FAUX ah nn pas valide plutôt. Va là bas tu verras c'est mimi : {', '.join(possible)}. il y a des licornes et des des arc-en-ciel.\n")
+            print(f"\n cherie t'y es contre sens, dirait sch donc'{user_input}' est FAUX ah nn pas valide plutôt. Va là bas tu verras c'est mimi : {', '.join(possible)}. il y a des licornes et des arc-en-ciel.\n")
             return False
+
 
         # Utilise la méthode move du joueur pour effectuer le déplacement
         player.move(direction_norm)
         #print(player.current_room.get_long_description())
+    
         return True
 
     def quit(game, list_of_words, number_of_parameters):
@@ -178,4 +180,5 @@ class Actions:
         previous_room = player.history.pop()
         player.current_room = previous_room
         print(player.current_room.get_long_description())
+        print(player.get_history())
         return True
