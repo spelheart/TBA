@@ -43,10 +43,10 @@ class Room:
             is_empty = not bool(self.inventory)
 
         if is_empty:
-            return "Votre inventaire est vide."
+            return "Il n'y a rien ici."
 
         # Build the inventory display
-        lines = ["Vous disposez des items suivants :"]
+        lines = ["La pièce contient :"]
 
         # Normalize to an iterable of items for dicts/lists/sets
         items = None
