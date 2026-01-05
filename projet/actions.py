@@ -248,6 +248,15 @@ class Actions:
         player = game.player
         room = player.current_room
 
+        # Prevent taking characters (PNJ) — items representing characters shouldn't be taken
+        try:
+            chars = getattr(room, 'characters', {})
+            if item_name in chars:
+                print(f"\nVous ne pouvez pas prendre le personnage '{item_name}'. Ce n'est pas un objet.\n")
+                return False
+        except Exception:
+            pass
+
         # Check if the item is in the room's inventory
         if item_name not in room.inventory:
             print(f"\nIl n'y a pas d'item nommé '{item_name}' ici.\n")
@@ -255,6 +264,14 @@ class Actions:
 
         # Check weight capacity before taking
         item = room.inventory.get(item_name)
+        # Also guard against a Character instance accidentally placed in inventory
+        try:
+            from character import Character
+            if isinstance(item, Character):
+                print(f"\n'{item_name}' est un personnage, vous ne pouvez pas le prendre.\n")
+                return False
+        except Exception:
+            pass
         item_weight = getattr(item, 'weight', 0)
         current = 0
         try:
