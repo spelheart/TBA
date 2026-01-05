@@ -8,6 +8,7 @@ from player import Player
 from command import Command
 from actions import Actions
 from item import Item
+from character import Character
 
 class Game:
 
@@ -53,21 +54,21 @@ class Game:
         self.rooms.append(salle2)
         musique = Room("Salle de musique", "la salle de musique. Vous observez au milieu de la pièce un piano, un piano à queue plus précisément. Pas n'importe quel piano à queue, un piano Steinway & Sons Model D-274, le nec plus ultra des pianos à queue. Après y'a aussi une guitare et une batterie mais bon... on s'en fout un peu non ?")
         self.rooms.append(musique)
-        art = Room("Salle d'art plastique", ".")
+        art = Room("Salle d'art plastique", "la salle d'art plastique. Il y a des sculptures fait avec les viex chewing gum trouvés sous les tables, des peintures dignes d'enfants de 3 ans, tu sais ceux que tu donnais à ta prof en maternelle et que tu retrouvais dans la poubelle le lendemain et une tête de biche empaillée.")
         self.rooms.append(art)
-        couloir2 = Room("Suite du couloir", ".")
+        couloir2 = Room("Suite du couloir", "la deuxième partie du couloir qui mène à la salle d'art plastique, au couloir menant au gymnase ou au hall d'entrée. Ah merde, c'est la description du premier ça. Oups...")
         self.rooms.append(couloir2)
-        couloir3 = Room("Fin du couloir", ".")
+        couloir3 = Room("Fin du couloir", "la fin du couloir. Déso mais t'iras pas plus loin.")
         self.rooms.append(couloir3)
         escalier = Room("Escalier menant au toit", ".")
         self.rooms.append(escalier)
         toit = Room("toit énorme de 70 m^2", ".")
         self.rooms.append(toit)
-        entree = Room("Entrée de l'école", ".")
+        entree = Room("Entrée de l'école", "l'entrée de l'école. Vous faites face à une grande porte vitrée.")
         self.rooms.append(entree)
         couloir_sport = Room("couloir menant au gymnase", ".")
         self.rooms.append(couloir_sport)
-        gym = Room("Castle", ".")
+        gym = Room("Gymnase", ".")
         self.rooms.append(gym)
         cafet = Room("Cafétéria", ".")
         self.rooms.append(cafet)
@@ -96,6 +97,14 @@ class Game:
         # store items by name in the room inventory dict
         hall_entree.inventory[casier.name] = casier
         hall_entree.inventory[sword.name] = sword
+
+        # Add characters to the hall d'entrée so they are visible via Room.get_inventory()
+        Joseph = Character("Joseph", "un personnage mystérieux", "hall d'entrée", "Salut, je m'appelle Joseph. Bienvenue en enfer...")
+        Jolyne = Character("Jolyne", "une jeune fille aux cheveux longs et aux yeux bleus", "hall d'entrée", "Je suis Jolyne, et je suis venue pour te tuer.")
+        # store items
+        # Store characters by name in the room inventory dict
+        hall_entree.inventory[Joseph.name] = Joseph
+        hall_entree.inventory[Jolyne.name] = Jolyne
 
         # Setup player and starting room
         self.player = Player(input("\nEntrez votre nom: "))

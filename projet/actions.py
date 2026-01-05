@@ -182,6 +182,7 @@ class Actions:
         print(player.current_room.get_long_description())
         print(player.get_history())
         return True
+    
     def look(game, list_of_words, number_of_parameters):
         """Affiche les items présents dans la pièce courante.
         Usage: `look` (aucun paramètre)
@@ -203,8 +204,35 @@ class Actions:
                 inv_str = str(getattr(room, 'inventory', {}))
             except Exception:
                 inv_str = "Il n'y a rien ici."
+        # Also include characters (PNJ) present in the room if any
+        chars_str = ""
+        try:
+            chars = getattr(room, 'characters', None)
+            char_list = []
+            if isinstance(chars, dict):
+                char_list = list(chars.values())
+            elif isinstance(chars, (list, tuple, set)):
+                char_list = list(chars)
+            else:
+                try:
+                    char_list = list(chars) if chars is not None else []
+                except Exception:
+                    char_list = [chars] if chars is not None else []
+
+            if len(char_list) > 0:
+                lines = ["Personnages présents :"]
+                for c in char_list:
+                    try:
+                        cstr = str(c)
+                    except Exception:
+                        cstr = getattr(c, 'name', repr(c))
+                    lines.append(f"    - {cstr}")
+                chars_str = "\n" + "\n".join(lines)
+        except Exception:
+            chars_str = ""
 
         print(inv_str)
+        print(chars_str)
         return True
     
     def take(game, list_of_words, number_of_parameters):
