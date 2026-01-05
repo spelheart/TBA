@@ -3,6 +3,8 @@
 
 # Import modules
 
+DEBUG = True
+
 from room import Room
 from player import Player
 from command import Command
@@ -19,6 +21,7 @@ class Game:
         self.commands = {}
         self.player = None
         self.actions = Actions()
+        self.characters = []
     
     # Setup the game
     def setup(self):
@@ -42,6 +45,8 @@ class Game:
         self.commands["drop"] = drop
         check = Command("check", " : afficher votre inventaire", Actions.check, 0)
         self.commands["check"] = check
+        talk = Command("talk", " <character> : parler à un personnage", Actions.talk, 1)
+        self.commands["talk"] = talk
         
         # Setup rooms
         hall_entree = Room("Hall d'entrée", "le hall d'entrée du lycée, où des casiers métalliques sont installés pour y ranger vos chaussures d’extérieur. ")
@@ -99,12 +104,13 @@ class Game:
         hall_entree.inventory[sword.name] = sword
 
         # Add characters to the hall d'entrée so they are visible via Room.get_inventory()
-        Joseph = Character("Joseph", "un personnage mystérieux", "hall d'entrée", "Salut, je m'appelle Joseph. Bienvenue en enfer...")
-        Jolyne = Character("Jolyne", "une jeune fille aux cheveux longs et aux yeux bleus", "hall d'entrée", "Je suis Jolyne, et je suis venue pour te tuer.")
+        Joseph = Character("Joseph", "un personnage mystérieux", hall_entree, ["Salut, je m'appelle Joseph. Bienvenue en enfer...", "Je ne suis pas très bavard aujourd'hui."])
+        Jolyne = Character("Jolyne", "une jeune fille aux cheveux longs et aux yeux bleus", hall_entree, ["Je suis Jolyne, et je suis venue pour te tuer.", "Yare Yare Dawa..."])
         # store items
         # Store characters by name in the room inventory dict
         hall_entree.inventory[Joseph.name] = Joseph
         hall_entree.inventory[Jolyne.name] = Jolyne
+        self.characters = [Joseph, Jolyne]
 
         # Setup player and starting room
         self.player = Player(input("\nEntrez votre nom: "))
@@ -135,6 +141,11 @@ class Game:
         else:
             command = self.commands[command_word]
             command.action(self, list_of_words, command.number_of_parameters)
+            
+            # Move NPCs only if the command is 'go' or 'back'
+            if command_word in ["go", "back"]:
+                for character in self.characters:
+                    character.move()
 
     # Print the welcome message
     def print_welcome(self):

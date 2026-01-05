@@ -231,8 +231,7 @@ class Actions:
         except Exception:
             chars_str = ""
 
-        print(inv_str)
-        print(chars_str)
+        print(inv_str + chars_str)
         return True
     
     def take(game, list_of_words, number_of_parameters):
@@ -249,15 +248,6 @@ class Actions:
         player = game.player
         room = player.current_room
 
-        # Prevent taking characters (PNJ) — items representing characters shouldn't be taken
-        try:
-            chars = getattr(room, 'characters', {})
-            if item_name in chars:
-                print(f"\nVous ne pouvez pas prendre le personnage '{item_name}'. Ce n'est pas un objet.\n")
-                return False
-        except Exception:
-            pass
-
         # Check if the item is in the room's inventory
         if item_name not in room.inventory:
             print(f"\nIl n'y a pas d'item nommé '{item_name}' ici.\n")
@@ -265,11 +255,11 @@ class Actions:
 
         # Check weight capacity before taking
         item = room.inventory.get(item_name)
-        # Also guard against a Character instance accidentally placed in inventory
+        #also guard against a Character instance accidentally placed in inventory
         try:
             from character import Character
             if isinstance(item, Character):
-                print(f"\n'{item_name}' est un personnage, vous ne pouvez pas le prendre.\n")
+                print(f"\n'{item_name}' est un personnage, vous ne pouvez pas le prendre. \n")
                 return False
         except Exception:
             pass
@@ -339,5 +329,32 @@ class Actions:
         item = player.inventory.pop(item_name)
         room.inventory[item_name] = item
         print(f"\nVous avez déposé : {item}\n")
+        return True
+
+    def talk(game, list_of_words, number_of_parameters):
+        """Parler à un personnage.
+        Usage: `talk <character_name>`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        character_name = list_of_words[1]
+        player = game.player
+        room = player.current_room
+
+        # Check if the character is in the room
+        if character_name not in room.inventory:
+            print(f"\nIl n'y a pas de personnage nommé '{character_name}' ici.\n")
+            return False
+        
+        character = room.inventory[character_name]
+        
+        if hasattr(character, 'get_msg'):
+             print(f"\n{character.get_msg()}\n")
+        else:
+             print(f"\nVous ne pouvez pas parler à {character_name}.\n")
         return True
     
