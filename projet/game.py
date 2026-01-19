@@ -72,10 +72,10 @@ class Game:
         self.commands["quest"] = quest
         play = Command("play", " <instrument> : jouer d'un instrument", Actions.play, 1)
         self.commands["play"] = play
-        monter = Command("monter", " : monter l'escalier secret", Actions.climb, 0)
-        self.commands["monter"] = monter
-        descendre = Command("descendre", " : descendre l'escalier secret", Actions.descend, 0)
-        self.commands["descendre"] = descendre
+        up = Command("up", " : monter l'escalier secret", Actions.climb, 0)
+        self.commands["up"] = up
+        down = Command("down", " : descendre l'escalier secret", Actions.descend, 0)
+        self.commands["down"] = down
         
         # Setup rooms
         hall_entree = Room("Hall d'entrée", "le hall d'entrée du lycée, où des casiers métalliques sont installés pour y ranger vos chaussures d’extérieur. ")
@@ -96,7 +96,7 @@ class Game:
         self.rooms.append(couloir3)
         escalier = Room("Escalier menant au toit", "un grand escalier en béton menant vers le toit. C'est un accès officiel à la terrasse, contrairement à l'escalier secret de la salle de musique.")
         self.rooms.append(escalier)
-        toit = Room("Toit énorme de 70 m²", "vous êtes sur le toit de l'école. La vue est magnifique, vous pouvez voir toute la région d'ici. L'escalier normal par lequel vous êtes arrivé vous permet de redescendre.")
+        toit = Room("Toit énorme de 70 m²", "sur le toit de l'école. La vue s'étend à perte de vue sur toute la région. Un majestueux arbre se dresse sur le côté du toit, ses feuilles dansant gracieusement au gré du vent, créant une symphonie visuelle apaisante.")
         self.rooms.append(toit)
         entree = Room("Entrée de l'école", "l'entrée de l'école. Vous faites face à une grande porte vitrée.")
         self.rooms.append(entree)
@@ -152,11 +152,15 @@ class Game:
         # Add items to the secret room
         canet = Item("canet", "un petit canet rouillé, probablement très ancien", 0.1)
         salle_secrete.inventory[canet.name] = canet
+        
+        # Add bench to the roof
+        banc = Item("banc", "un banc en bois peint, situé à côté du majestueux arbre", 10)
+        toit.inventory[banc.name] = banc
 
         # Add characters to the hall d'entrée so they are visible via Room.get_inventory()
         Joseph = Character("Joseph", "un personnage mystérieux", hall_entree, ["Salut, je m'appelle Joseph. Bienvenue en enfer...", "Je ne suis pas très bavard aujourd'hui."])
         Jolyne = Character("Jolyne", "une jeune fille aux cheveux longs et aux yeux bleus", hall_entree, ["Je suis Jolyne, et je suis venue pour te tuer.", "Yare Yare Daze..."])
-        Victoria = Character("Victoria", "une matérialiste extrême, Elle juge les gens à la marque de leurs chaussures.", entree, ["C'est mignon ce que tu dis, mais est-ce que ça brille ?", "Désolée, je ne parle pas aux gens qui portent du polyester."])
+        Victoria = Character("Victoria", "assise sur le banc du toit, elle se recoiffe gracieusement. Sa beauté nous émerveille.", toit, ["C'est mignon ce que tu dis, mais est-ce que ça brille ?", "Désolée, je ne parle pas aux gens qui portent du polyester."], immobile=True)
         Sophie = Character("Sophie", "la meilleure amie de Victoria (en vrai elle l'aime pas)", couloir2, ["Salut.", "Je ne."])
         Max = Character("Max", "un boug pas random du jeu", gym, ["Salut.", "Je ne."])
 
@@ -164,7 +168,7 @@ class Game:
         # Store characters by name in the room inventory dict
         hall_entree.inventory[Joseph.name] = Joseph
         hall_entree.inventory[Jolyne.name] = Jolyne
-        entree.inventory[Victoria.name] = Victoria
+        toit.inventory[Victoria.name] = Victoria
         couloir2.inventory[Sophie.name] = Sophie
         gym.inventory[Max.name] = Max
         self.characters = [Joseph, Jolyne, Victoria, Sophie, Max]

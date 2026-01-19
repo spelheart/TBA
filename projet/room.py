@@ -27,8 +27,8 @@ class Room:
         exit_string = "Sorties: " 
         # Map special exit names to more readable labels
         exit_labels = {
-            "escalier_secret_up": "monter",
-            "escalier_secret_down": "descendre"
+            "escalier_secret_up": "up",
+            "escalier_secret_down": "down"
         }
         for exit in self.exits.keys():
             if self.exits.get(exit) is not None:

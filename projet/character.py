@@ -1,13 +1,14 @@
 import random
 
 class Character:
-    def __init__(self, name: str, description: str, current_room, msgs: list):
+    def __init__(self, name: str, description: str, current_room, msgs: list, immobile: bool = False):
         self.name = name
         self.description = description
         self.current_room = current_room
         self.msgs = msgs
         self.last_msg = None  # Track last message for quest failures
         self.repeat_last_msg = False  # Flag to repeat last message
+        self.immobile = immobile  # If True, the character won't move
 
     def __str__(self) -> str:
         return f"{self.name} : {self.description} "
@@ -27,6 +28,10 @@ class Character:
         return msg
 
     def move(self):
+        # If the character is immobile, don't move
+        if self.immobile:
+            return False
+            
         if random.choice([True, False]):
             # Build list of (direction, room) pairs for available exits
             possible_pairs = [(dirc, room) for dirc, room in self.current_room.exits.items() if room is not None]
