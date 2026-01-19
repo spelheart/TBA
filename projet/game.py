@@ -9,9 +9,27 @@ from room import Room
 from player import Player
 from command import Command
 from actions import Actions
-from item import Item
+from item import Item, Instrument
 from character import Character
 from quest import Quest, QuestManager
+
+
+def piano_effect(game):
+    """Fonction appelée quand le joueur joue du piano.
+    Descend l'escalier secret de la salle de musique."""
+    print("\n🎹 Vous jouez une magnifique mélodie au piano...\n")
+    print("Soudain, un grondement résonne dans la salle !")
+    print("L'escalier secret commence à descendre du plafond avec un bruit sourd...\n")
+    print("✨ Un escalier en pierre apparaît maintenant dans la salle !\n")
+    print("Vous pouvez maintenant utiliser 'monter' et 'descendre' pour accéder à la salle secrète.\n")
+    
+    # Connecter l'escalier secret
+    for room in game.rooms:
+        if room.name == "Salle de musique":
+            for other_room in game.rooms:
+                if other_room.name == "Salle secrète":
+                    room.exits["escalier_secret_up"] = other_room
+
 
 class Game:
 
@@ -52,6 +70,12 @@ class Game:
         self.commands["quests"] = quests
         quest = Command("quest", " <nom> : afficher les détails d'une quête", Actions.show_quest_details, 1)
         self.commands["quest"] = quest
+        play = Command("play", " <instrument> : jouer d'un instrument", Actions.play, 1)
+        self.commands["play"] = play
+        monter = Command("monter", " : monter l'escalier secret", Actions.climb, 0)
+        self.commands["monter"] = monter
+        descendre = Command("descendre", " : descendre l'escalier secret", Actions.descend, 0)
+        self.commands["descendre"] = descendre
         
         # Setup rooms
         hall_entree = Room("Hall d'entrée", "le hall d'entrée du lycée, où des casiers métalliques sont installés pour y ranger vos chaussures d’extérieur. ")
@@ -70,9 +94,9 @@ class Game:
         self.rooms.append(couloir2)
         couloir3 = Room("Fin du couloir", "la fin du couloir. Déso mais t'iras pas plus loin.")
         self.rooms.append(couloir3)
-        escalier = Room("Escalier menant au toit", ".")
+        escalier = Room("Escalier menant au toit", "un grand escalier en béton menant vers le toit. C'est un accès officiel à la terrasse, contrairement à l'escalier secret de la salle de musique.")
         self.rooms.append(escalier)
-        toit = Room("toit énorme de 70 m^2", ".")
+        toit = Room("Toit énorme de 70 m²", "vous êtes sur le toit de l'école. La vue est magnifique, vous pouvez voir toute la région d'ici. L'escalier normal par lequel vous êtes arrivé vous permet de redescendre.")
         self.rooms.append(toit)
         entree = Room("Entrée de l'école", "l'entrée de l'école. Vous faites face à une grande porte vitrée.")
         self.rooms.append(entree)
@@ -82,6 +106,10 @@ class Game:
         self.rooms.append(gym)
         cafet = Room("Cafétéria", ".")
         self.rooms.append(cafet)
+        
+        # Salle secrète sous la salle de musique
+        salle_secrete = Room("Salle secrète", "une salle secrète cachée sous la salle de musique. Le plafond est bas et l'atmosphère y est mystérieuse. Un ancien escalier en pierre descend du plafond, permettant de remonter à la salle de musique.")
+        self.rooms.append(salle_secrete)
         
     
         # Create exits for rooms
@@ -93,14 +121,14 @@ class Game:
         couloir2.exits = {"N" : salle1, "E" : couloir3, "S" : salle2, "O" : couloir1, "M" : None, "D" : None}
         couloir3.exits = {"N" : art, "E" : escalier, "S" : musique, "O" : couloir2, "M" : None, "D" : None}
         entree.exits = {"N" : None, "E" : hall_entree, "S" : None, "O" : None, "M" : None, "D" : None}
-        escalier.exits = {"N" : None, "E" : None, "S" : None, "O" : couloir3, "M" : toit, "D" : None}
-        toit.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "M" : None, "D" : escalier}
+        escalier.exits = {"N" : None, "E" : None, "S" : None, "O" : couloir3, "M" : None, "D" : None, "escalier_secret_up" : toit, "escalier_secret_down" : None}
+        toit.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "M" : None, "D" : None, "escalier_secret_up" : None, "escalier_secret_down" : escalier}
         couloir_sport.exits = {"N" : couloir1, "E" : None, "S" : gym, "O" : None, "M" : None, "D" : None}
         gym.exits = {"N" : couloir_sport, "E" : None, "S" : None, "O" : None, "M" : None, "D" : None}
         art.exits = {"N" : None, "E" : None, "S" : couloir3, "O" : None, "M" : None, "D" : None}
-        musique.exits = {"N" : couloir3, "E" : None, "S" : None, "O" : None, "M" : None, "D" : None}
+        musique.exits = {"N" : couloir3, "E" : None, "S" : None, "O" : None, "M" : None, "D" : None, "escalier_secret_up" : None, "escalier_secret_down" : None}
         cafet.exits = {"N" : None, "E" : None, "S" : couloir1, "O" : None, "M" : None, "D" : None}
-
+        salle_secrete.exits = {"N" : None, "E" : None, "S" : None, "O" : None, "M" : None, "D" : None, "escalier_secret_up" : None, "escalier_secret_down" : musique}
         # Add items to the hall d'entrée so they are visible via Room.get_inventory()
         casier = Item("casier", "un casier métallique verrouillé, idéal pour y ranger ses affaires", 20)
         sword = Item("sword", "une épée au fil tranchant comme un rasoir", 2)
@@ -111,6 +139,19 @@ class Game:
         hall_entree.inventory[sword.name] = sword
         musique.inventory[journal.name] = journal
         salle1.inventory[copie.name] = copie
+        
+        # Add instruments to music room
+        piano = Instrument("piano", "un magnifique piano à queue Steinway & Sons Model D-274", 500, piano_effect)
+        guitare = Instrument("guitare", "une belle guitare acoustique", 2, lambda game: print("\n🎸 Vous jouez de la guitare avec style ! La musique résonne mélodieusement dans la salle.\n"))
+        batterie = Instrument("batterie", "une batterie complète avec cymbales", 50, lambda game: print("\n🥁 Vous jouez de la batterie avec énergie ! Le rythme envahit la salle.\n"))
+        
+        musique.inventory[piano.name] = piano
+        musique.inventory[guitare.name] = guitare
+        musique.inventory[batterie.name] = batterie
+        
+        # Add items to the secret room
+        canet = Item("canet", "un petit canet rouillé, probablement très ancien", 0.1)
+        salle_secrete.inventory[canet.name] = canet
 
         # Add characters to the hall d'entrée so they are visible via Room.get_inventory()
         Joseph = Character("Joseph", "un personnage mystérieux", hall_entree, ["Salut, je m'appelle Joseph. Bienvenue en enfer...", "Je ne suis pas très bavard aujourd'hui."])
@@ -230,13 +271,12 @@ class Game:
         # If the command is recognized, execute it
         else:
             command = self.commands[command_word]
-            command.action(self, list_of_words, command.number_of_parameters)
+            success = command.action(self, list_of_words, command.number_of_parameters)
             
-            # Move NPCs only if the command is 'go' or 'back'
-            if command_word in ["go", "back"]:
+            # Move NPCs only if the command is 'go' or 'back' AND was successful
+            if success and command_word in ["go", "back"]:
                 for character in self.characters:
                     character.move()
-
     # Print the welcome message
     def print_welcome(self):
         print(f"\nBienvenue {self.player.name} dans ce jeu d'aventure !")

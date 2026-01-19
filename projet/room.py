@@ -25,9 +25,16 @@ class Room:
     # Return a string describing the room's exits.
     def get_exit_string(self):
         exit_string = "Sorties: " 
+        # Map special exit names to more readable labels
+        exit_labels = {
+            "escalier_secret_up": "monter",
+            "escalier_secret_down": "descendre"
+        }
         for exit in self.exits.keys():
             if self.exits.get(exit) is not None:
-                exit_string += exit + ", "
+                # Use label from map if available, otherwise use the exit name
+                label = exit_labels.get(exit, exit)
+                exit_string += label + ", "
         exit_string = exit_string.strip(", ")
         return exit_string
 

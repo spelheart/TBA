@@ -424,3 +424,89 @@ class Actions:
         
         return True
     
+    def play(game, list_of_words, number_of_parameters):
+        """Permet au joueur de jouer d'un instrument.
+        Usage: `play <instrument_name>`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+        
+        instrument_name = list_of_words[1]
+        player = game.player
+        room = player.current_room
+        
+        # Check if the instrument is in the room's inventory
+        if instrument_name not in room.inventory:
+            print(f"\nIl n'y a pas d'instrument nommé '{instrument_name}' ici.\n")
+            return False
+        
+        item = room.inventory[instrument_name]
+        
+        # Check if it's an Instrument
+        from item import Instrument
+        if not isinstance(item, Instrument):
+            print(f"\n'{instrument_name}' n'est pas un instrument jouable.\n")
+            return False
+        
+        # Execute the effect if it exists
+        if item.effect:
+            print(f"\n🎵 Vous jouez du {instrument_name}...\n")
+            if callable(item.effect):
+                # If effect is a function, call it with game as parameter
+                item.effect(game)
+            else:
+                # Otherwise just print the effect message
+                print(item.effect)
+        else:
+            print(f"\n🎵 Vous jouez du {instrument_name}... La musique résonne dans la salle.\n")
+        
+        return True
+    
+    def climb(game, list_of_words, number_of_parameters):
+        """Permet au joueur de monter l'escalier secret.
+        Usage: `monter`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+        
+        player = game.player
+        room = player.current_room
+        
+        # Check if there's an escalier_secret_down exit
+        if "escalier_secret_up" not in room.exits or room.exits["escalier_secret_up"] is None:
+            print("\nIl n'y a pas d'escalier secret ici pour monter.\n")
+            return False
+        
+        player.history.append(room)
+        player.current_room = room.exits["escalier_secret_up"]
+        print(player.current_room.get_long_description())
+        return True
+    
+    def descend(game, list_of_words, number_of_parameters):
+        """Permet au joueur de descendre l'escalier secret.
+        Usage: `descendre`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+        
+        player = game.player
+        room = player.current_room
+        
+        # Check if there's an escalier_secret_down exit
+        if "escalier_secret_down" not in room.exits or room.exits["escalier_secret_down"] is None:
+            print("\nIl n'y a pas d'escalier secret ici pour descendre.\n")
+            return False
+        
+        player.history.append(room)
+        player.current_room = room.exits["escalier_secret_down"]
+        print(player.current_room.get_long_description())
+        return True
