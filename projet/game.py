@@ -130,7 +130,7 @@ class Game:
 
         # Setup player and starting room
         self.player = Player(input("\nEntrez votre nom: "))
-        self.player.current_room = entree
+        self.player.current_room = entree   
 
         # Setup quest manager
         self.player.quest_manager = QuestManager(self.player)
