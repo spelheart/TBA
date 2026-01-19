@@ -1,8 +1,11 @@
 # Define the Player class.
+from item import Item
+
+
 class Player():
 
     # Define the constructor.
-    def __init__(self, name, max_weight: float = 20.0):
+    def __init__(self, name, max_weight: float = 2.0):
         self.name = name
         self.current_room = None
         self.history = []
@@ -10,6 +13,8 @@ class Player():
         self.inventory = {}
         # Maximum weight the player can carry (kg)
         self.max_weight = max_weight
+        # Quest manager
+        self.quest_manager = None
 
     def get_current_weight(self) -> float:
         """Return the total weight of items currently carried by the player."""
@@ -56,7 +61,8 @@ class Player():
             is_empty = not bool(self.inventory)
 
         if is_empty:
-            return "Votre inventaire est vide."
+            current_weight = self.get_current_weight()
+            return f"Votre inventaire est vide.\n⚖️  Poids: {current_weight:.3f} kg / {self.max_weight} kg"
 
         # Build the inventory display
         lines = ["Vous disposez des items suivants :"]
@@ -85,5 +91,30 @@ class Player():
                     item_str = repr(it)
             lines.append(f"    - {item_str}")
 
+        # Add weight summary at the end
+        current_weight = self.get_current_weight()
+        lines.append(f"\n⚖️  Poids: {current_weight:.3f} kg / {self.max_weight} kg")
+
         return "\n".join(lines)
+    
+    def add_reward(self, reward_text):
+        """Add a reward message for completing a quest."""
+        print(f"📦 Récompense reçue: {reward_text}")
+        
+        # Create an Item object for the reward and add it to inventory
+        reward_item = Item(reward_text.lower().replace(" ", "_"), f"Récompense: {reward_text}", 0.033)
+        
+        # Check if adding this item would exceed weight capacity
+        current_weight = self.get_current_weight()
+        new_total_weight = current_weight + reward_item.weight
+        
+        if new_total_weight > self.max_weight:
+            excess_weight = new_total_weight - self.max_weight
+            print(f"\n❌ C'est trop lourd mon pote va falloir lâcher un item, j'ai pas 4 bras nn plus")
+            print(f"❌ Il y a {excess_weight:.3f} kg en trop\n")
+            return False
+        
+        # Add the reward to inventory
+        self.inventory[reward_item.name] = reward_item
+        return True
     
