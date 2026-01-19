@@ -105,12 +105,15 @@ class Game:
 
         # Add characters to the hall d'entrée so they are visible via Room.get_inventory()
         Joseph = Character("Joseph", "un personnage mystérieux", hall_entree, ["Salut, je m'appelle Joseph. Bienvenue en enfer...", "Je ne suis pas très bavard aujourd'hui."])
-        Jolyne = Character("Jolyne", "une jeune fille aux cheveux longs et aux yeux bleus", hall_entree, ["Je suis Jolyne, et je suis venue pour te tuer.", "Yare Yare Dawa..."])
+        Jolyne = Character("Jolyne", "une jeune fille aux cheveux longs et aux yeux bleus", hall_entree, ["Je suis Jolyne, et je suis venue pour te tuer.", "Yare Yare Daze..."])
+        Victoria = Character("Victoria", "matérialiste extrême, Elle juge les gens à la marque de leurs chaussures.", entree, ["C'est mignon ce que tu dis, mais est-ce que ça brille ?", "Désolée, je ne parle pas aux gens qui portent du polyester."])
+        
         # store items
         # Store characters by name in the room inventory dict
         hall_entree.inventory[Joseph.name] = Joseph
         hall_entree.inventory[Jolyne.name] = Jolyne
-        self.characters = [Joseph, Jolyne]
+        entree.inventory[Victoria.name] = Victoria
+        self.characters = [Joseph, Jolyne, Victoria]
 
         # Setup player and starting room
         self.player = Player(input("\nEntrez votre nom: "))
