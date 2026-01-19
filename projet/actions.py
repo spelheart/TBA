@@ -467,7 +467,7 @@ class Actions:
     
     def climb(game, list_of_words, number_of_parameters):
         """Permet au joueur de monter l'escalier secret.
-        Usage: `monter`
+        Usage: `up`
         """
         l = len(list_of_words)
         if l != number_of_parameters + 1:
@@ -478,7 +478,7 @@ class Actions:
         player = game.player
         room = player.current_room
         
-        # Check if there's an escalier_secret_down exit
+        # Check if there's an escalier_secret_up exit
         if "escalier_secret_up" not in room.exits or room.exits["escalier_secret_up"] is None:
             print("\nIl n'y a pas d'escalier secret ici pour monter.\n")
             return False
@@ -490,7 +490,7 @@ class Actions:
     
     def descend(game, list_of_words, number_of_parameters):
         """Permet au joueur de descendre l'escalier secret.
-        Usage: `descendre`
+        Usage: `down`
         """
         l = len(list_of_words)
         if l != number_of_parameters + 1:
@@ -509,4 +509,335 @@ class Actions:
         player.history.append(room)
         player.current_room = room.exits["escalier_secret_down"]
         print(player.current_room.get_long_description())
+        return True    
+    def read(game, list_of_words, number_of_parameters):
+        """Permet au joueur de lire le contenu du carnet.
+        Usage: `read <objet>` ou `read <objet> next/prev`
+        """
+        import random
+        
+        l = len(list_of_words)
+        if l < number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+        
+        player = game.player
+        item_name = list_of_words[1].lower()
+        
+        # Check if the player has the item in their inventory
+        if item_name not in player.inventory:
+            print(f"\nVous n'avez pas de {item_name} à lire.\n")
+            return False
+        
+        # Check if it's the carnet
+        if item_name != "carnet":
+            print(f"\nVous ne pouvez pas lire {item_name}.\n")
+            return False
+        
+        # Define all pages of the carnet
+        pages = [
+            # Page 1: Wish list
+            {
+                "title": "Page 1 - Ma liste de souhaits",
+                "content": [
+                    "Voici les choses que j'aimerais recevoir:",
+                    "  • Un collier de diamants étincelants",
+                    "  • Des chaussures Louboutin rouge vif",
+                    "  • Un sac à main Hermès Birkin",
+                    "  • Une montre Rolex en or",
+                    "  • Un foulard Hermès en soie pure",
+                    "  • Un parfum Chanel No. 5"
+                ]
+            },
+            # Page 2: Family history
+            {
+                "title": "Page 2 - Mon enfance",
+                "content": [
+                    "Quand j'étais petite, ma mère m'emmenait au musée du Louvre.",
+                    "Je me souviens des peintures impressionnantes, mais ce qui m'a vraiment",
+                    "marquée, c'était la beauté des cadres dorés qui entouraient les œuvres.",
+                    "Ma mère me disait: 'Victoria, la vraie beauté réside dans les détails.'",
+                    "Je n'ai jamais oublié ces paroles."
+                ]
+            },
+            # Page 3: Friendship with Sophie
+            {
+                "title": "Page 3 - Sophie",
+                "content": [
+                    "Sophie prétend être ma meilleure amie, mais je sais qu'elle est jalouse.",
+                    "Elle n'arrête pas de vouloir s'approprier mes vêtements et mes accessoires.",
+                    "L'autre jour, elle a essayé de porter ma veste Chanel en cachette.",
+                    "Je n'ai pas apprécié. On ne touche pas aux affaires de quelqu'un",
+                    "sans sa permission, surtout les pièces de créateurs."
+                ]
+            },
+            # Page 4: School life
+            {
+                "title": "Page 4 - À l'école",
+                "content": [
+                    "J'ai remarqué que les gens jugent les autres à première vue.",
+                    "C'est la raison pour laquelle je prends soin de mon apparence.",
+                    "Les bonnes chaussures, les bons accessoires... tout compte.",
+                    "Quand je porte mes Louboutin, les gens me traitent différemment.",
+                    "Ils sont plus respectueux. C'est malheureusement comme ça que fonctionne le monde."
+                ]
+            },
+            # Page 5: Shopping adventure
+            {
+                "title": "Page 5 - Mon jour préféré",
+                "content": [
+                    "Hier, je suis allée faire du shopping aux Galeries Lafayette.",
+                    "J'ai découvert une nouvelle collection de bijoux de créateurs.",
+                    "Il y avait une bague en particulier... magnifique, délicate, intemporelle.",
+                    "Elle coûtait trop cher pour moi, mais je pense souvent à elle.",
+                    "Je la revois souvent dans mes rêves, brillant sous les lumières du magasin."
+                ]
+            },
+            # Page 6: Secret dream (with subtle hint about real gift)
+            {
+                "title": "Page 6 - Mon vrai rêve secret",
+                "content": [
+                    "Si je devais choisir un seul cadeau au monde... ce serait quelque chose",
+                    "qui m'a été volé autrefois. Quelque chose qui avait une profonde signification.",
+                    "C'était une bague - pas une Rolex ou un diamant extravagant -",
+                    "mais une simple bague en or blanc avec une pierre bleue. Une bague que ma",
+                    "grand-mère m'avait donnée avant de disparaître quand j'avais 10 ans.",
+                    "Je la chercherai toute ma vie. Ce serait le plus beau cadeau du monde."
+                ]
+            },
+            # Page 7: Beauty routine
+            {
+                "title": "Page 7 - Mon rituel beauté",
+                "content": [
+                    "Chaque matin, je me réveille et je me demande qui je veux être ce jour.",
+                    "Je me recoiffe, j'ajuste mon maquillage avec soin, je sélectionne mon parfum.",
+                    "C'est mon moment personnel, où je deviens vraiment moi-même.",
+                    "Certains pensent que c'est superficiel, mais pour moi, c'est une forme",
+                    "d'art. Je suis une toile blanche que je peins chaque jour."
+                ]
+            },
+            # Page 8: Memories of mother
+            {
+                "title": "Page 8 - Ma mère",
+                "content": [
+                    "Ma mère travaillait dans la mode. Elle m'a appris à apprécier la qualité.",
+                    "Elle disait que les vêtements bon marché se voient tout de suite.",
+                    "Mais aussi qu'une personne vraie brille à travers les tissus.",
+                    "Parfois, je sens son parfum autour de moi, même s'il y a des années",
+                    "que je ne l'ai pas vue. Je pense qu'elle serait fière de moi."
+                ]
+            },
+            # Page 9: Insecurities
+            {
+                "title": "Page 9 - Mes peurs secrètes",
+                "content": [
+                    "Malgré tout ce que les gens voient, je suis terrifiée à l'idée",
+                    "que quelqu'un découvre que je ne suis pas aussi riche qu'ils le pensent.",
+                    "Je dois garder les apparences. Le luxe que j'affiche, c'est aussi",
+                    "une protection, un mur entre le monde et ma véritable nature.",
+                    "Parfois, j'aimerais juste être acceptée pour qui je suis, pas pour ce que j'ai."
+                ]
+            },
+            # Page 10: Future dreams
+            {
+                "title": "Page 10 - L'avenir",
+                "content": [
+                    "Je rêve d'une vie où je n'aurai pas besoin de tout ce luxe pour me sentir",
+                    "valorisée. Un jour, peut-être, je trouverai quelqu'un qui m'aimera",
+                    "malgré ma façade de matérialiste. Quelqu'un qui verra au-delà des vêtements",
+                    "et des bijoux. Quelqu'un qui trouvera la vraie Victoria, celle",
+                    "qui existe derrière le maquillage et la fierté."
+                ]
+            },
+            # Page 11: Recent reflections
+            {
+                "title": "Page 11 - Réflexions récentes",
+                "content": [
+                    "En vieillissant, j'ai commencé à réaliser que les choses matérielles",
+                    "ne remplissent jamais vraiment le vide. L'amour de ma grand-mère,",
+                    "le sourire de ma mère, ces choses-là ne peuvent pas s'acheter.",
+                    "Si quelqu'un avait la gentillesse de chercher cette bague perdue...",
+                    "ce serait un acte d'amour plus précieux que toutes les bijouteries du monde."
+                ]
+            },
+            # Page 12: Last page
+            {
+                "title": "Page 12 - Un dernier souhait",
+                "content": [
+                    "Je ferme ce carnet en espérant que personne ne le lira jamais.",
+                    "Mais si quelqu'un le fait... sachez que derrière la fille superficielle",
+                    "que vous voyez à l'école, il y a quelqu'un de brisée qui cherche désespérément",
+                    "à se reconstruire. Peut-être qu'un jour, je trouverai le courage",
+                    "de montrer ma vraie face au monde. En attendant, j'endure."
+                ]
+            }
+        ]
+        
+        print("\n" + "="*60)
+        print("📖 CARNET DE VICTORIA - ÉDITION LUXE")
+        print("="*60 + "\n")
+        
+        # Check for navigation command
+        navigation = None
+        if len(list_of_words) > 2:
+            navigation = list_of_words[2].lower()
+        
+        # Handle page navigation
+        if navigation == "next":
+            player.carnet_current_page += 1
+            if player.carnet_current_page >= len(pages):
+                player.carnet_current_page = len(pages) - 1
+                print("\n⚠️  Vous êtes à la dernière page du carnet.\n")
+        elif navigation == "prev":
+            player.carnet_current_page -= 1
+            if player.carnet_current_page < 0:
+                player.carnet_current_page = 0
+                print("\n⚠️  Vous êtes à la première page du carnet.\n")
+        else:
+            # Reset to first page on initial read
+            player.carnet_current_page = 0
+        
+        # Display current page
+        current_page = pages[player.carnet_current_page]
+        
+        print("\n" + "="*60)
+        print("📖 CARNET DE VICTORIA - ÉDITION LUXE")
+        print("="*60 + "\n")
+        print(f"\n--- {current_page['title']} ---\n")
+        for line in current_page['content']:
+            print(line)
+        print()
+        
+        # Display navigation info
+        print("="*60)
+        print(f"Page {player.carnet_current_page + 1}/{len(pages)}")
+        if player.carnet_current_page > 0:
+            print("Utilisez 'prev' pour la page précédente")
+        if player.carnet_current_page < len(pages) - 1:
+            print("Utilisez 'next' pour la page suivante")
+        print("="*60 + "\n")
+        
+        # Set flag that player is reading carnet
+        player.is_reading_carnet = True
+        
         return True
+    
+    def next_page(game, list_of_words, number_of_parameters):
+        """Aller à la page suivante du carnet.
+        Usage: `next`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+        
+        player = game.player
+        
+        # Check if player is reading carnet
+        if not player.is_reading_carnet:
+            print("\nVous ne lisez pas le carnet en ce moment.\n")
+            return False
+        
+        # Define all pages of the carnet (same as in read function)
+        pages = [
+            {"title": "Page 1 - Ma liste de souhaits", "content": ["Voici les choses que j'aimerais recevoir:", "  • Un collier de diamants étincelants", "  • Des chaussures Louboutin rouge vif", "  • Un sac à main Hermès Birkin", "  • Une montre Rolex en or", "  • Un foulard Hermès en soie pure", "  • Un parfum Chanel No. 5"]},
+            {"title": "Page 2 - Mon enfance", "content": ["Quand j'étais petite, ma mère m'emmenait au musée du Louvre.", "Je me souviens des peintures impressionnantes, mais ce qui m'a vraiment", "marquée, c'était la beauté des cadres dorés qui entouraient les œuvres.", "Ma mère me disait: 'Victoria, la vraie beauté réside dans les détails.'", "Je n'ai jamais oublié ces paroles."]},
+            {"title": "Page 3 - Sophie", "content": ["Sophie prétend être ma meilleure amie, mais je sais qu'elle est jalouse.", "Elle n'arrête pas de vouloir s'approprier mes vêtements et mes accessoires.", "L'autre jour, elle a essayé de porter ma veste Chanel en cachette.", "Je n'ai pas apprécié. On ne touche pas aux affaires de quelqu'un", "sans sa permission, surtout les pièces de créateurs."]},
+            {"title": "Page 4 - À l'école", "content": ["J'ai remarqué que les gens jugent les autres à première vue.", "C'est la raison pour laquelle je prends soin de mon apparence.", "Les bonnes chaussures, les bons accessoires... tout compte.", "Quand je porte mes Louboutin, les gens me traitent différemment.", "Ils sont plus respectueux. C'est malheureusement comme ça que fonctionne le monde."]},
+            {"title": "Page 5 - Mon jour préféré", "content": ["Hier, je suis allée faire du shopping aux Galeries Lafayette.", "J'ai découvert une nouvelle collection de bijoux de créateurs.", "Il y avait une bague en particulier... magnifique, délicate, intemporelle.", "Elle coûtait trop cher pour moi, mais je pense souvent à elle.", "Je la revois souvent dans mes rêves, brillant sous les lumières du magasin."]},
+            {"title": "Page 6 - Mon vrai rêve secret", "content": ["Si je devais choisir un seul cadeau au monde... ce serait quelque chose", "qui m'a été volé autrefois. Quelque chose qui avait une profonde signification.", "C'était une bague - pas une Rolex ou un diamant extravagant -", "mais une simple bague en or blanc avec une pierre bleue. Une bague que ma", "grand-mère m'avait donnée avant de disparaître quand j'avais 10 ans.", "Je la chercherai toute ma vie. Ce serait le plus beau cadeau du monde."]},
+            {"title": "Page 7 - Mon rituel beauté", "content": ["Chaque matin, je me réveille et je me demande qui je veux être ce jour.", "Je me recoiffe, j'ajuste mon maquillage avec soin, je sélectionne mon parfum.", "C'est mon moment personnel, où je deviens vraiment moi-même.", "Certains pensent que c'est superficiel, mais pour moi, c'est une forme", "d'art. Je suis une toile blanche que je peins chaque jour."]},
+            {"title": "Page 8 - Ma mère", "content": ["Ma mère travaillait dans la mode. Elle m'a appris à apprécier la qualité.", "Elle disait que les vêtements bon marché se voient tout de suite.", "Mais aussi qu'une personne vraie brille à travers les tissus.", "Parfois, je sens son parfum autour de moi, même s'il y a des années", "que je ne l'ai pas vue. Je pense qu'elle serait fière de moi."]},
+            {"title": "Page 9 - Mes peurs secrètes", "content": ["Malgré tout ce que les gens voient, je suis terrifiée à l'idée", "que quelqu'un découvre que je ne suis pas aussi riche qu'ils le pensent.", "Je dois garder les apparences. Le luxe que j'affiche, c'est aussi", "une protection, un mur entre le monde et ma véritable nature.", "Parfois, j'aimerais juste être acceptée pour qui je suis, pas pour ce que j'ai."]},
+            {"title": "Page 10 - L'avenir", "content": ["Je rêve d'une vie où je n'aurai pas besoin de tout ce luxe pour me sentir", "valorisée. Un jour, peut-être, je trouverai quelqu'un qui m'aimera", "malgré ma façade de matérialiste. Quelqu'un qui verra au-delà des vêtements", "et des bijoux. Quelqu'un qui trouvera la vraie Victoria, celle", "qui existe derrière le maquillage et la fierté."]},
+            {"title": "Page 11 - Réflexions récentes", "content": ["En vieillissant, j'ai commencé à réaliser que les choses matérielles", "ne remplissent jamais vraiment le vide. L'amour de ma grand-mère,", "le sourire de ma mère, ces choses-là ne peuvent pas s'acheter.", "Si quelqu'un avait la gentillesse de chercher cette bague perdue...", "ce serait un acte d'amour plus précieux que toutes les bijouteries du monde."]},
+            {"title": "Page 12 - Un dernier souhait", "content": ["Je ferme ce carnet en espérant que personne ne le lira jamais.", "Mais si quelqu'un le fait... sachez que derrière la fille superficielle", "que vous voyez à l'école, il y a quelqu'un de brisée qui cherche désespérément", "à se reconstruire. Peut-être qu'un jour, je trouverai le courage", "de montrer ma vraie face au monde. En attendant, j'endure."]}
+        ]
+        
+        player.carnet_current_page += 1
+        if player.carnet_current_page >= len(pages):
+            player.carnet_current_page = len(pages) - 1
+            print("\n⚠️  Vous êtes à la dernière page du carnet.\n")
+            return False
+        
+        # Display current page
+        current_page = pages[player.carnet_current_page]
+        
+        print("\n" + "="*60)
+        print("📖 CARNET DE VICTORIA - ÉDITION LUXE")
+        print("="*60 + "\n")
+        print(f"\n--- {current_page['title']} ---\n")
+        for line in current_page['content']:
+            print(line)
+        print()
+        
+        # Display navigation info
+        print("="*60)
+        print(f"Page {player.carnet_current_page + 1}/{len(pages)}")
+        if player.carnet_current_page > 0:
+            print("Utilisez 'prev' pour la page précédente")
+        if player.carnet_current_page < len(pages) - 1:
+            print("Utilisez 'next' pour la page suivante")
+        print("="*60 + "\n")
+        
+        return True
+    
+    def prev_page(game, list_of_words, number_of_parameters):
+        """Aller à la page précédente du carnet.
+        Usage: `prev`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+        
+        player = game.player
+        
+        # Check if player is reading carnet
+        if not player.is_reading_carnet:
+            print("\nVous ne lisez pas le carnet en ce moment.\n")
+            return False
+        
+        # Define all pages of the carnet (same as in read function)
+        pages = [
+            {"title": "Page 1 - Ma liste de souhaits", "content": ["Voici les choses que j'aimerais recevoir:", "  • Un collier de diamants étincelants", "  • Des chaussures Louboutin rouge vif", "  • Un sac à main Hermès Birkin", "  • Une montre Rolex en or", "  • Un foulard Hermès en soie pure", "  • Un parfum Chanel No. 5"]},
+            {"title": "Page 2 - Mon enfance", "content": ["Quand j'étais petite, ma mère m'emmenait au musée du Louvre.", "Je me souviens des peintures impressionnantes, mais ce qui m'a vraiment", "marquée, c'était la beauté des cadres dorés qui entouraient les œuvres.", "Ma mère me disait: 'Victoria, la vraie beauté réside dans les détails.'", "Je n'ai jamais oublié ces paroles."]},
+            {"title": "Page 3 - Sophie", "content": ["Sophie prétend être ma meilleure amie, mais je sais qu'elle est jalouse.", "Elle n'arrête pas de vouloir s'approprier mes vêtements et mes accessoires.", "L'autre jour, elle a essayé de porter ma veste Chanel en cachette.", "Je n'ai pas apprécié. On ne touche pas aux affaires de quelqu'un", "sans sa permission, surtout les pièces de créateurs."]},
+            {"title": "Page 4 - À l'école", "content": ["J'ai remarqué que les gens jugent les autres à première vue.", "C'est la raison pour laquelle je prends soin de mon apparence.", "Les bonnes chaussures, les bons accessoires... tout compte.", "Quand je porte mes Louboutin, les gens me traitent différemment.", "Ils sont plus respectueux. C'est malheureusement comme ça que fonctionne le monde."]},
+            {"title": "Page 5 - Mon jour préféré", "content": ["Hier, je suis allée faire du shopping aux Galeries Lafayette.", "J'ai découvert une nouvelle collection de bijoux de créateurs.", "Il y avait une bague en particulier... magnifique, délicate, intemporelle.", "Elle coûtait trop cher pour moi, mais je pense souvent à elle.", "Je la revois souvent dans mes rêves, brillant sous les lumières du magasin."]},
+            {"title": "Page 6 - Mon vrai rêve secret", "content": ["Si je devais choisir un seul cadeau au monde... ce serait quelque chose", "qui m'a été volé autrefois. Quelque chose qui avait une profonde signification.", "C'était une bague - pas une Rolex ou un diamant extravagant -", "mais une simple bague en or blanc avec une pierre bleue. Une bague que ma", "grand-mère m'avait donnée avant de disparaître quand j'avais 10 ans.", "Je la chercherai toute ma vie. Ce serait le plus beau cadeau du monde."]},
+            {"title": "Page 7 - Mon rituel beauté", "content": ["Chaque matin, je me réveille et je me demande qui je veux être ce jour.", "Je me recoiffe, j'ajuste mon maquillage avec soin, je sélectionne mon parfum.", "C'est mon moment personnel, où je deviens vraiment moi-même.", "Certains pensent que c'est superficiel, mais pour moi, c'est une forme", "d'art. Je suis une toile blanche que je peins chaque jour."]},
+            {"title": "Page 8 - Ma mère", "content": ["Ma mère travaillait dans la mode. Elle m'a appris à apprécier la qualité.", "Elle disait que les vêtements bon marché se voient tout de suite.", "Mais aussi qu'une personne vraie brille à travers les tissus.", "Parfois, je sens son parfum autour de moi, même s'il y a des années", "que je ne l'ai pas vue. Je pense qu'elle serait fière de moi."]},
+            {"title": "Page 9 - Mes peurs secrètes", "content": ["Malgré tout ce que les gens voient, je suis terrifiée à l'idée", "que quelqu'un découvre que je ne suis pas aussi riche qu'ils le pensent.", "Je dois garder les apparences. Le luxe que j'affiche, c'est aussi", "une protection, un mur entre le monde et ma véritable nature.", "Parfois, j'aimerais juste être acceptée pour qui je suis, pas pour ce que j'ai."]},
+            {"title": "Page 10 - L'avenir", "content": ["Je rêve d'une vie où je n'aurai pas besoin de tout ce luxe pour me sentir", "valorisée. Un jour, peut-être, je trouverai quelqu'un qui m'aimera", "malgré ma façade de matérialiste. Quelqu'un qui verra au-delà des vêtements", "et des bijoux. Quelqu'un qui trouvera la vraie Victoria, celle", "qui existe derrière le maquillage et la fierté."]},
+            {"title": "Page 11 - Réflexions récentes", "content": ["En vieillissant, j'ai commencé à réaliser que les choses matérielles", "ne remplissent jamais vraiment le vide. L'amour de ma grand-mère,", "le sourire de ma mère, ces choses-là ne peuvent pas s'acheter.", "Si quelqu'un avait la gentillesse de chercher cette bague perdue...", "ce serait un acte d'amour plus précieux que toutes les bijouteries du monde."]},
+            {"title": "Page 12 - Un dernier souhait", "content": ["Je ferme ce carnet en espérant que personne ne le lira jamais.", "Mais si quelqu'un le fait... sachez que derrière la fille superficielle", "que vous voyez à l'école, il y a quelqu'un de brisée qui cherche désespérément", "à se reconstruire. Peut-être qu'un jour, je trouverai le courage", "de montrer ma vraie face au monde. En attendant, j'endure."]}
+        ]
+        
+        player.carnet_current_page -= 1
+        if player.carnet_current_page < 0:
+            player.carnet_current_page = 0
+            print("\n⚠️  Vous êtes à la première page du carnet.\n")
+            return False
+        
+        # Display current page
+        current_page = pages[player.carnet_current_page]
+        
+        print("\n" + "="*60)
+        print("📖 CARNET DE VICTORIA - ÉDITION LUXE")
+        print("="*60 + "\n")
+        print(f"\n--- {current_page['title']} ---\n")
+        for line in current_page['content']:
+            print(line)
+        print()
+        
+        # Display navigation info
+        print("="*60)
+        print(f"Page {player.carnet_current_page + 1}/{len(pages)}")
+        if player.carnet_current_page > 0:
+            print("Utilisez 'prev' pour la page précédente")
+        if player.carnet_current_page < len(pages) - 1:
+            print("Utilisez 'next' pour la page suivante")

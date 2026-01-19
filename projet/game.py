@@ -21,7 +21,7 @@ def piano_effect(game):
     print("Soudain, un grondement résonne dans la salle !")
     print("L'escalier secret commence à descendre du plafond avec un bruit sourd...\n")
     print("✨ Un escalier en pierre apparaît maintenant dans la salle !\n")
-    print("Vous pouvez maintenant utiliser 'monter' et 'descendre' pour accéder à la salle secrète.\n")
+    print("Vous pouvez maintenant utiliser 'up' et 'down' pour accéder à la salle secrète.\n")
     
     # Connecter l'escalier secret
     for room in game.rooms:
@@ -72,10 +72,16 @@ class Game:
         self.commands["quest"] = quest
         play = Command("play", " <instrument> : jouer d'un instrument", Actions.play, 1)
         self.commands["play"] = play
-        up = Command("up", " : monter l'escalier secret", Actions.climb, 0)
+        up = Command("up", " : monter (escalier secret)", Actions.climb, 0)
         self.commands["up"] = up
-        down = Command("down", " : descendre l'escalier secret", Actions.descend, 0)
+        down = Command("down", " : descendre (escalier secret)", Actions.descend, 0)
         self.commands["down"] = down
+        read = Command("read", " <objet> : lire le contenu d'un objet", Actions.read, 1)
+        self.commands["read"] = read
+        next_page = Command("next", " : aller à la page suivante du carnet", Actions.next_page, 0)
+        self.commands["next"] = next_page
+        prev_page = Command("prev", " : aller à la page précédente du carnet", Actions.prev_page, 0)
+        self.commands["prev"] = prev_page
         
         # Setup rooms
         hall_entree = Room("Hall d'entrée", "le hall d'entrée du lycée, où des casiers métalliques sont installés pour y ranger vos chaussures d’extérieur. ")
@@ -150,8 +156,8 @@ class Game:
         musique.inventory[batterie.name] = batterie
         
         # Add items to the secret room
-        canet = Item("canet", "un petit canet rouillé, probablement très ancien", 0.1)
-        salle_secrete.inventory[canet.name] = canet
+        carnet = Item("carnet", "un petit carnet luxueux, il y ait indiqué le prénom de Victoria, écrit en caractère dorée", 0.1)
+        salle_secrete.inventory[carnet.name] = carnet
         
         # Add bench to the roof
         banc = Item("banc", "un banc en bois peint, situé à côté du majestueux arbre", 10)

@@ -15,6 +15,10 @@ class Player():
         self.max_weight = max_weight
         # Quest manager
         self.quest_manager = None
+        # Current page of carnet being read
+        self.carnet_current_page = 0
+        # Track if player is reading the carnet
+        self.is_reading_carnet = False
 
     def get_current_weight(self) -> float:
         """Return the total weight of items currently carried by the player."""
