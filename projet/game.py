@@ -107,7 +107,7 @@ class Game:
         Joseph = Character("Joseph", "un personnage mystérieux", hall_entree, ["Salut, je m'appelle Joseph. Bienvenue en enfer...", "Je ne suis pas très bavard aujourd'hui."])
         Jolyne = Character("Jolyne", "une jeune fille aux cheveux longs et aux yeux bleus", hall_entree, ["Je suis Jolyne, et je suis venue pour te tuer.", "Yare Yare Daze..."])
         Victoria = Character("Victoria", "matérialiste extrême, Elle juge les gens à la marque de leurs chaussures.", entree, ["C'est mignon ce que tu dis, mais est-ce que ça brille ?", "Désolée, je ne parle pas aux gens qui portent du polyester."])
-        
+
         # store items
         # Store characters by name in the room inventory dict
         hall_entree.inventory[Joseph.name] = Joseph
