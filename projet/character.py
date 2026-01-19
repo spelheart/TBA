@@ -6,6 +6,8 @@ class Character:
         self.description = description
         self.current_room = current_room
         self.msgs = msgs
+        self.last_msg = None  # Track last message for quest failures
+        self.repeat_last_msg = False  # Flag to repeat last message
 
     def __str__(self) -> str:
         return f"{self.name} : {self.description} "
@@ -13,19 +15,28 @@ class Character:
     def get_msg(self):
         if not self.msgs:
             return "..."
+        
+        # If we need to repeat the last message, do so
+        if self.repeat_last_msg and self.last_msg is not None:
+            self.repeat_last_msg = False  # Reset flag for next call
+            return self.last_msg
+        
         msg = self.msgs.pop(0)
         self.msgs.append(msg)
+        self.last_msg = msg  # Store as last message
         return msg
 
     def move(self):
         if random.choice([True, False]):
-            possible_exits = [room for room in self.current_room.exits.values() if room is not None]
-            if possible_exits:
-                new_room = random.choice(possible_exits)
-                
+            # Build list of (direction, room) pairs for available exits
+            possible_pairs = [(dirc, room) for dirc, room in self.current_room.exits.items() if room is not None]
+            if possible_pairs:
+                dirc, new_room = random.choice(possible_pairs)
+
                 from game import DEBUG
                 if DEBUG:
-                    print(f"DEBUG: {self.name} se déplace de {self.current_room.name} vers {new_room.name}")
+                    # Show the direction (N/E/S/O) in parentheses
+                    print(f"DEBUG: {self.name} se déplace de {self.current_room.name} vers {new_room.name} ({dirc})")
 
                 if self.name in self.current_room.inventory:
                     del self.current_room.inventory[self.name]

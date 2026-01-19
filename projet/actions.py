@@ -59,6 +59,10 @@ class Actions:
         # Utilise la méthode move du joueur pour effectuer le déplacement
         player.move(direction_norm)
         #print(player.current_room.get_long_description())
+        
+        # Check quest objectives for visiting rooms
+        if player.quest_manager:
+            player.quest_manager.check_room_objectives(player.current_room.name)
     
         return True
 
@@ -282,6 +286,11 @@ class Actions:
         item = room.inventory.pop(item_name)
         player.inventory[item_name] = item
         print(f"\nVous avez ramassé : {item}\n")
+        
+        # Check quest objectives for taking items
+        if player.quest_manager:
+            player.quest_manager.complete_objective(f"Récupérer {item_name}")
+        
         return True
     
     def check(game, list_of_words, number_of_parameters):
@@ -353,8 +362,65 @@ class Actions:
         character = room.inventory[character_name]
         
         if hasattr(character, 'get_msg'):
-             print(f"\n{character.get_msg()}\n")
+            print(f"\n{character.get_msg()}\n")
         else:
-             print(f"\nVous ne pouvez pas parler à {character_name}.\n")
+            print(f"\nVous ne pouvez pas parler à {character_name}.\n")
+
+        # Check quest objectives for talking to characters
+        if player.quest_manager:
+            # Track total completed objectives before attempt
+            total_completed_before = sum(
+                len(q.completed_objectives) for q in player.quest_manager.get_all_quests()
+            )
+
+            player.quest_manager.check_action_objectives("parler", character_name)
+
+            # Check if any objective was completed
+            total_completed_after = sum(
+                len(q.completed_objectives) for q in player.quest_manager.get_all_quests()
+            )
+
+            # If no new objectives were completed, mark character to repeat message
+            if total_completed_after == total_completed_before and hasattr(character, 'repeat_last_msg'):
+                character.repeat_last_msg = True
+        
+        return True
+    
+    def show_quests(game, list_of_words, number_of_parameters):
+        """Affiche la liste de toutes les quêtes du joueur.
+        Usage: `quests` (aucun paramètre)
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        player = game.player
+        if player.quest_manager:
+            player.quest_manager.show_quests()
+        else:
+            print("\nAucune quête disponible.\n")
+        
+        return True
+    
+    def show_quest_details(game, list_of_words, number_of_parameters):
+        """Affiche les détails d'une quête spécifique.
+        Usage: `quest <quest_name>`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        quest_name = " ".join(list_of_words[1:])  # Support multi-word quest names
+        player = game.player
+        
+        if player.quest_manager:
+            player.quest_manager.show_quest_details(quest_name)
+        else:
+            print("\nAucune quête disponible.\n")
+        
         return True
     

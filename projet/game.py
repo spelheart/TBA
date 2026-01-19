@@ -11,6 +11,7 @@ from command import Command
 from actions import Actions
 from item import Item
 from character import Character
+from quest import Quest, QuestManager
 
 class Game:
 
@@ -47,6 +48,10 @@ class Game:
         self.commands["check"] = check
         talk = Command("talk", " <character> : parler à un personnage", Actions.talk, 1)
         self.commands["talk"] = talk
+        quests = Command("quests", " : afficher la liste de vos quêtes", Actions.show_quests, 0)
+        self.commands["quests"] = quests
+        quest = Command("quest", " <nom> : afficher les détails d'une quête", Actions.show_quest_details, 1)
+        self.commands["quest"] = quest
         
         # Setup rooms
         hall_entree = Room("Hall d'entrée", "le hall d'entrée du lycée, où des casiers métalliques sont installés pour y ranger vos chaussures d’extérieur. ")
@@ -99,25 +104,95 @@ class Game:
         # Add items to the hall d'entrée so they are visible via Room.get_inventory()
         casier = Item("casier", "un casier métallique verrouillé, idéal pour y ranger ses affaires", 20)
         sword = Item("sword", "une épée au fil tranchant comme un rasoir", 2)
+        journal = Item("journal intime de Victoria", "un vieux journal intime jauni par le temps", 1)
+        copie = Item("piles de copies d'examen", "une copie d'examen avec une note de 0/20", 1)
         # store items by name in the room inventory dict
         hall_entree.inventory[casier.name] = casier
         hall_entree.inventory[sword.name] = sword
+        musique.inventory[journal.name] = journal
+        salle1.inventory[copie.name] = copie
 
         # Add characters to the hall d'entrée so they are visible via Room.get_inventory()
         Joseph = Character("Joseph", "un personnage mystérieux", hall_entree, ["Salut, je m'appelle Joseph. Bienvenue en enfer...", "Je ne suis pas très bavard aujourd'hui."])
         Jolyne = Character("Jolyne", "une jeune fille aux cheveux longs et aux yeux bleus", hall_entree, ["Je suis Jolyne, et je suis venue pour te tuer.", "Yare Yare Daze..."])
-        Victoria = Character("Victoria", "matérialiste extrême, Elle juge les gens à la marque de leurs chaussures.", entree, ["C'est mignon ce que tu dis, mais est-ce que ça brille ?", "Désolée, je ne parle pas aux gens qui portent du polyester."])
+        Victoria = Character("Victoria", "une matérialiste extrême, Elle juge les gens à la marque de leurs chaussures.", entree, ["C'est mignon ce que tu dis, mais est-ce que ça brille ?", "Désolée, je ne parle pas aux gens qui portent du polyester."])
+        Sophie = Character("Sophie", "la meilleure amie de Victoria (en vrai elle l'aime pas)", couloir2, ["Salut.", "Je ne."])
+        Max = Character("Max", "un boug pas random du jeu", gym, ["Salut.", "Je ne."])
 
         # store items
         # Store characters by name in the room inventory dict
         hall_entree.inventory[Joseph.name] = Joseph
         hall_entree.inventory[Jolyne.name] = Jolyne
         entree.inventory[Victoria.name] = Victoria
-        self.characters = [Joseph, Jolyne, Victoria]
+        couloir2.inventory[Sophie.name] = Sophie
+        gym.inventory[Max.name] = Max
+        self.characters = [Joseph, Jolyne, Victoria, Sophie, Max]
 
         # Setup player and starting room
         self.player = Player(input("\nEntrez votre nom: "))
         self.player.current_room = entree
+
+        # Setup quest manager
+        self.player.quest_manager = QuestManager(self.player)
+
+        # 1. Quête d'item : récupérer l'épée dans le hall
+        quete_item = Quest(
+            title="L'Épée Légendaire",
+            description="Récupère l'épée qui se trouve dans le hall d'entrée.",
+            objectives=["Récupérer sword"],
+            reward="Épée de braves"
+        )
+        self.player.quest_manager.add_quest(quete_item)
+        quete_item.activate()
+        self.player.quest_manager.active_quests.append(quete_item)
+
+        # 2. Quête de déplacement : aller à la cafétéria
+        quete_deplacement = Quest(
+            title="Explorer la Cafétéria",
+            description="Rends-toi à la cafétéria.",
+            objectives=["Visiter Cafétéria"],
+            reward="Bon de réduction"
+        )
+        self.player.quest_manager.add_quest(quete_deplacement)
+        quete_deplacement.activate()
+        self.player.quest_manager.active_quests.append(quete_deplacement)
+
+        # 3. Quête d'interaction : parler à Jolyne
+        quete_interaction = Quest(
+            title="Parler à Jolyne",
+            description="Va parler à Jolyne pour récupérer 50 dollars.",
+            objectives=["parler avec Jolyne"],
+            reward="50 dollars"
+        )
+        self.player.quest_manager.add_quest(quete_interaction)
+        quete_interaction.activate()
+        self.player.quest_manager.active_quests.append(quete_interaction)
+
+    # Check if player has won
+    def win(self):
+        """
+        Returns True if all quests are completed, False otherwise.
+        """
+        if not self.player.quest_manager:
+            return False
+        
+        # Check if all quests are completed
+        all_completed = all(quest.is_completed for quest in self.player.quest_manager.get_all_quests())
+        return all_completed
+
+    # Check if player has lost
+    def loose(self):
+        """
+        Returns True if losing condition is met, False otherwise.
+        Losing condition: entering a specific room without having a specific item.
+        Example: entering the gym without the sword would be a losing condition.
+        """
+        # Example: If player enters gym without sword, they lose
+        if self.player.current_room.name == "Gymnase" and "sword" not in self.player.inventory:
+            print("\n💀 Vous êtes entré au gymnase sans équipement ! Vous avez perdu !\n")
+            return True
+        
+        return False
 
     # Play the game
     def play(self):
@@ -125,6 +200,18 @@ class Game:
         self.print_welcome()
         # Loop until the game is finished
         while not self.finished:
+            # Check winning condition
+            if self.win():
+                print("\n🏆 Félicitations ! Vous avez complété toutes les quêtes et gagné la partie !\n")
+                self.finished = True
+                break
+            
+            # Check losing condition
+            if self.loose():
+                print("\n☠️ Vous avez perdu la partie.\n")
+                self.finished = True
+                break
+            
             # Get the command from the player
             self.process_command(input("> "))
         return None
@@ -157,6 +244,39 @@ class Game:
         #
         print(self.player.current_room.get_long_description()) 
     
+def _setup_quests(self):
+        """Initialize all quests."""
+        exploration_quest = Quest(
+            title="Grand Explorateur",
+            description="Explorez tous les lieux de ce monde mystérieux.",
+            objectives=["Visiter Forest"
+                        , "Visiter Tower"
+                        , "Visiter Cave"
+                        , "Visiter Cottage"
+                        , "Visiter Castle"],
+            reward="Titre de Grand Explorateur"
+        )
+
+        travel_quest = Quest(
+            title="Grand Voyageur",
+            description="Déplacez-vous 10 fois entre les lieux.",
+            objectives=["Se déplacer 10 fois"],
+            reward="Bottes de voyageur"
+        )
+
+        discovery_quest = Quest(
+            title="Découvreur de Secrets",
+            description="Découvrez les trois lieux les plus mystérieux.",
+            objectives=["Visiter Cave"
+                        , "Visiter Tower"
+                        , "Visiter Castle"],
+            reward="Clé dorée"
+        )
+
+        # Add quests to player's quest manager
+        self.player.quest_manager.add_quest(exploration_quest)
+        self.player.quest_manager.add_quest(travel_quest)
+        self.player.quest_manager.add_quest(discovery_quest)
 
 def main():
     # Create a game object and play the game
