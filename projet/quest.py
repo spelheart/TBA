@@ -229,8 +229,9 @@ class QuestManager:
 
     def get_quest_by_title(self, title):
         """Get a quest by its title."""
+        title_lower = title.lower()
         for quest in self.quests:
-            if quest.title == title:
+            if quest.title.lower() == title_lower:
                 return quest
         return None
 

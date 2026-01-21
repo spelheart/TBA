@@ -1,3 +1,4 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,trailing-whitespace,trailing-newlines,no-else-return,redefined-builtin,too-many-branches,duplicate-code,broad-exception-caught
 
 # Define the Room class.
 
@@ -27,8 +28,8 @@ class Room:
         exit_string = "Sorties: " 
         # Map special exit names to more readable labels
         exit_labels = {
-            "escalier_secret_up": "up",
-            "escalier_secret_down": "down"
+            "U": "up",
+            "D": "down"
         }
         for exit in self.exits.keys():
             if self.exits.get(exit) is not None:

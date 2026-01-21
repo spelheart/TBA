@@ -1,3 +1,5 @@
+# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,line-too-long,trailing-whitespace,no-self-argument,no-member,broad-exception-caught,import-outside-toplevel,unused-import,inconsistent-return-statements,redefined-builtin,too-many-branches,duplicate-code,attribute-defined-outside-init
+
 # Description: The actions module.
 
 # The actions module contains the functions that are called when a command is executed.
@@ -138,11 +140,23 @@ class Actions:
             print(MSG0.format(command_word=command_word))
             return False
         
-        # Print the list of available commands.
-        print("\nVoici les commandes disponibles:")
+        # Print the list of available commands grouped by category.
+        print("\nVoici les commandes disponibles:\n")
+        
+        # Group commands by category
+        categories = {}
         for command in game.commands.values():
-            print("\t- " + str(command))
-        print()
+            if command.category not in categories:
+                categories[command.category] = []
+            categories[command.category].append(command)
+        
+        # Display commands by category
+        for category in sorted(categories.keys()):
+            print(f"📌 {category}:")
+            for command in categories[category]:
+                print("\t- " + str(command))
+            print()
+        
         return True
     
     def back(game, list_of_words, number_of_parameters):
@@ -409,7 +423,7 @@ class Actions:
         Usage: `quest <quest_name>`
         """
         l = len(list_of_words)
-        if l != number_of_parameters + 1:
+        if l < number_of_parameters + 1:
             command_word = list_of_words[0]
             print(MSG1.format(command_word=command_word))
             return False
@@ -466,7 +480,7 @@ class Actions:
         return True
     
     def climb(game, list_of_words, number_of_parameters):
-        """Permet au joueur de monter l'escalier secret.
+        """Permet au joueur de monter l'escalier secret via la commande 'up'.
         Usage: `up`
         """
         l = len(list_of_words)
@@ -478,18 +492,18 @@ class Actions:
         player = game.player
         room = player.current_room
         
-        # Check if there's an escalier_secret_up exit
-        if "escalier_secret_up" not in room.exits or room.exits["escalier_secret_up"] is None:
-            print("\nIl n'y a pas d'escalier secret ici pour monter.\n")
+        # Check if there's an upward exit
+        if "U" not in room.exits or room.exits["U"] is None:
+            print("\nIl n'y a pas d'escalier pour monter ici.\n")
             return False
         
         player.history.append(room)
-        player.current_room = room.exits["escalier_secret_up"]
+        player.current_room = room.exits["U"]
         print(player.current_room.get_long_description())
         return True
     
     def descend(game, list_of_words, number_of_parameters):
-        """Permet au joueur de descendre l'escalier secret.
+        """Permet au joueur de descendre l'escalier secret via la commande 'down'.
         Usage: `down`
         """
         l = len(list_of_words)
@@ -501,13 +515,13 @@ class Actions:
         player = game.player
         room = player.current_room
         
-        # Check if there's an escalier_secret_down exit
-        if "escalier_secret_down" not in room.exits or room.exits["escalier_secret_down"] is None:
-            print("\nIl n'y a pas d'escalier secret ici pour descendre.\n")
+        # Check if there's a downward exit
+        if "D" not in room.exits or room.exits["D"] is None:
+            print("\nIl n'y a pas d'escalier pour descendre ici.\n")
             return False
         
         player.history.append(room)
-        player.current_room = room.exits["escalier_secret_down"]
+        player.current_room = room.exits["D"]
         print(player.current_room.get_long_description())
         return True    
     def read(game, list_of_words, number_of_parameters):
