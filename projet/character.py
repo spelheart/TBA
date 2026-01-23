@@ -12,6 +12,7 @@ class Character:
         msgs: list,
         immobile: bool = False,
         patrol_rooms: list = None,
+        escape_phrases: list = None,
     ):  # pylint: disable=too-many-arguments,too-many-positional-arguments
         self.name = name
         self.description = description
@@ -22,6 +23,7 @@ class Character:
         self.immobile = immobile  # If True, the character won't move
         self.patrol_rooms = patrol_rooms or []  # List of rooms to patrol between
         self.is_patrolling = False  # Whether the character is currently patrolling
+        self.escape_phrases = escape_phrases or []  # Phrases for escaping
 
     def __str__(self) -> str:
         """Return string representation of the character."""

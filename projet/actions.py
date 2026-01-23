@@ -1,11 +1,15 @@
 # pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,line-too-long,trailing-whitespace,no-self-argument,no-member,broad-exception-caught,import-outside-toplevel,unused-import,inconsistent-return-statements,redefined-builtin,too-many-branches,duplicate-code,attribute-defined-outside-init,too-many-lines
 
+import random
+import threading
+
 # Description: The actions module.
 
 # The actions module contains the functions that are called when a command is executed.
 # Each function takes 3 parameters:
 # - game: the game object
 # - list_of_words: the list of words in the command
+# - number_of_parameters: the number of parameters expected
 # - number_of_parameters: the number of parameters expected by the command
 # The functions return True if the command was executed successfully, False otherwise.
 # The functions print an error message if the number of parameters is incorrect.
@@ -17,6 +21,26 @@
 MSG0 = "\nLa commande '{command_word}' ne prend pas de paramètre.\n"
 # The MSG1 variable is used when the command takes 1 parameter.
 MSG1 = "\nLa commande '{command_word}' prend 1 seul paramètre.\n"
+
+
+def input_with_timeout(prompt, timeout_sec=15):
+    """Prompt user for input with a timeout. Returns None if timeout occurs."""
+    result = [None]
+    
+    def input_thread():
+        try:
+            result[0] = input(prompt)
+        except:
+            pass
+    
+    thread = threading.Thread(target=input_thread, daemon=True)
+    thread.start()
+    thread.join(timeout=timeout_sec)
+    
+    if thread.is_alive():
+        print("\n⏱️ Temps écoulé! Vous avez dépassé les 15 secondes!\n")
+        return None
+    return result[0]
 
 
 class Actions:
@@ -63,7 +87,64 @@ class Actions:
         # Utilise la méthode move du joueur pour effectuer le déplacement
         old_room = player.current_room
         player.move(direction_norm)
-        # print(player.current_room.get_long_description())
+        
+        # Move all characters BEFORE checking for encounter
+        for character in game.characters:
+            character.move()
+
+        # CHECK FOR JOSEPH ENCOUNTER
+        if player.hunted_by_joseph:
+            room = player.current_room
+            if "Joseph" in room.inventory:
+                character = room.inventory["Joseph"]
+                if hasattr(character, 'escape_phrases') and character.escape_phrases and len(character.escape_phrases) > 0:
+                    # Encounter! Launch mini-game
+                    print(f"\n⚠️ {character.get_msg()}\n")
+                    print("Vous avez une chance de vous échapper!\n")
+                    
+                    escape_phrase = random.choice(character.escape_phrases)
+                    print(f"Tapez rapidement: '{escape_phrase}'\n")
+                    
+                    player_input = input_with_timeout("> ", timeout_sec=15)
+                    if player_input is None:
+                        print(f"\n💀 Vous n'avez pas été assez rapide!\n")
+                        print(f"{character.name}: C'est fini pour toi!\n")
+                        return "LOSE"
+                    elif player_input.strip() == escape_phrase:
+                        print(f"\n✅ Vous réussissez à vous échapper de justesse!\n")
+                        # You escape back to the previous room
+                        player.current_room = old_room
+                    else:
+                        print(f"\n💀 Vous n'avez pas été assez rapide!\n")
+                        print(f"{character.name}: C'est fini pour toi!\n")
+                        return "LOSE"
+        
+        # CHECK FOR JOLYNE ENCOUNTER
+        if player.hunted_by_jolyne:
+            room = player.current_room
+            if "Jolyne" in room.inventory:
+                character = room.inventory["Jolyne"]
+                if hasattr(character, 'escape_phrases') and character.escape_phrases and len(character.escape_phrases) > 0:
+                    # Encounter! Launch mini-game
+                    print(f"\n⚠️ {character.get_msg()}\n")
+                    print("Vous avez une chance de vous échapper!\n")
+                    
+                    escape_phrase = random.choice(character.escape_phrases)
+                    print(f"Tapez rapidement: '{escape_phrase}'\n")
+                    
+                    player_input = input_with_timeout("> ", timeout_sec=15)
+                    if player_input is None:
+                        print(f"\n💀 Vous n'avez pas été assez rapide!\n")
+                        print(f"{character.name}: C'est fini pour toi!\n")
+                        return "LOSE"
+                    elif player_input.strip() == escape_phrase:
+                        print(f"\n✅ Vous réussissez à vous échapper de justesse!\n")
+                        # You escape back to the previous room
+                        player.current_room = old_room
+                    else:
+                        print(f"\n💀 Vous n'avez pas été assez rapide!\n")
+                        print(f"{character.name}: C'est fini pour toi!\n")
+                        return "LOSE"
 
         # Reset flag when entering gym (allowing free entry)
         if old_room.name != "Gymnase" and player.current_room.name == "Gymnase":
@@ -112,6 +193,9 @@ class Actions:
                                 character.is_patrolling = True
                                 break
 
+        # Don't print here - player.move() already does it
+        # print(player.current_room.get_long_description())
+        # print(player.get_history())
         return True
 
     def quit(game, list_of_words, number_of_parameters):
@@ -318,6 +402,65 @@ class Actions:
         # Perform the back action
         previous_room = player.history.pop()
         player.current_room = previous_room
+        
+        # Move all characters BEFORE checking for encounter
+        for character in game.characters:
+            character.move()
+        
+        # Check for Joseph encounter during hunt
+        if player.hunted_by_joseph:
+            room = player.current_room
+            if "Joseph" in room.inventory:
+                character = room.inventory["Joseph"]
+                if hasattr(character, 'escape_phrases') and character.escape_phrases and len(character.escape_phrases) > 0:
+                    print(f"\n⚠️ {character.get_msg()}\n")
+                    print("Vous avez une chance de vous échapper!\n")
+                    
+                    escape_phrase = random.choice(character.escape_phrases)
+                    print(f"Tapez rapidement: '{escape_phrase}'\n")
+                    
+                    player_input = input_with_timeout("> ", timeout_sec=15)
+                    if player_input is None:
+                        print(f"\n💀 Vous n'avez pas été assez rapide!\n")
+                        print(f"{character.name}: C'est fini pour toi!\n")
+                        return "LOSE"
+                    elif player_input.strip() == escape_phrase:
+                        print(f"\n✅ Vous réussissez à vous échapper de justesse!\n")
+                        # You escape back to the previous room
+                        player.current_room = previous_room
+                        player.history.append(previous_room)
+                    else:
+                        print(f"\n💀 Vous n'avez pas été assez rapide!\n")
+                        print(f"{character.name}: C'est fini pour toi!\n")
+                        return "LOSE"
+        
+        # Check for Jolyne encounter during hunt
+        if player.hunted_by_jolyne:
+            room = player.current_room
+            if "Jolyne" in room.inventory:
+                character = room.inventory["Jolyne"]
+                if hasattr(character, 'escape_phrases') and character.escape_phrases and len(character.escape_phrases) > 0:
+                    print(f"\n⚠️ {character.get_msg()}\n")
+                    print("Vous avez une chance de vous échapper!\n")
+                    
+                    escape_phrase = random.choice(character.escape_phrases)
+                    print(f"Tapez rapidement: '{escape_phrase}'\n")
+                    
+                    player_input = input_with_timeout("> ", timeout_sec=15)
+                    if player_input is None:
+                        print(f"\n💀 Vous n'avez pas été assez rapide!\n")
+                        print(f"{character.name}: C'est fini pour toi!\n")
+                        return "LOSE"
+                    elif player_input.strip() == escape_phrase:
+                        print(f"\n✅ Vous réussissez à vous échapper de justesse!\n")
+                        # You escape back to the previous room
+                        player.current_room = previous_room
+                        player.history.append(previous_room)
+                    else:
+                        print(f"\n💀 Vous n'avez pas été assez rapide!\n")
+                        print(f"{character.name}: C'est fini pour toi!\n")
+                        return "LOSE"
+        
         print(player.current_room.get_long_description())
         print(player.get_history())
         return True
@@ -504,6 +647,20 @@ class Actions:
             return False
 
         character = room.inventory[character_name]
+
+        # Special handling for Joseph - trigger hunt
+        if character_name == "Joseph":
+            if not player.hunted_by_joseph:
+                player.hunted_by_joseph = True
+                print(f"\n⚠️ {character_name}: Tu aurais pas dû faire ça...\n")
+                print("Il te prend en chasse!\n")
+        
+        # Special handling for Jolyne - trigger hunt
+        if character_name == "Jolyne":
+            if not player.hunted_by_jolyne:
+                player.hunted_by_jolyne = True
+                print(f"\n⚠️ {character_name}: Tu aurais pas dû faire ça...\n")
+                print("Elle te prend en chasse!\n")
 
         # Special handling for Lucas - gives locker code hint only if exam quest is active
         if character_name == "Lucas":

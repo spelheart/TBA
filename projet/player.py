@@ -41,6 +41,9 @@ class Player:  # pylint: disable=too-many-instance-attributes
         self.first_visit_salle_profs_after_exam_quest = False
         # Track if Koro's patrol has started
         self.koro_patrol_started = False
+        # Track if being hunted by Joseph/Jolyne - individual flags
+        self.hunted_by_joseph = False
+        self.hunted_by_jolyne = False
 
     def get_current_weight(self) -> float:
         """Return the total weight of items currently carried by the player."""

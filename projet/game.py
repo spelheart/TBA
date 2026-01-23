@@ -438,6 +438,19 @@ class Game:
         )
 
         # Add characters
+        joseph_escape_phrases = [
+            "Sauve-toi immédiatement maintenant",
+            "Cours vers la sortie rapidement",
+            "Accélère ou tu crèves",
+            "Fuis sans regarder derrière",
+        ]
+        jolyne_escape_phrases = [
+            "Dépêche-toi de te sauver",
+            "Échappe-toi avant qu'ils arrivent",
+            "Sprint hors d'ici maintenant",
+            "Bouge ou tu meurs ici",
+        ]
+        
         joseph = Character(
             "Joseph",
             "un personnage mystérieux",
@@ -446,15 +459,20 @@ class Game:
                 "Salut, je m'appelle Joseph. Bienvenue en enfer...",
                 "Je ne suis pas très bavard aujourd'hui.",
             ],
+            patrol_rooms=[hall_entree, couloir1, couloir2, couloir3, entree, escalier, toit, musique, art, salle1, salle2, salle_profs, couloir_sport, gym],
+            escape_phrases=joseph_escape_phrases,
         )
+        
         jolyne = Character(
             "Jolyne",
             "une jeune fille aux cheveux longs et aux yeux bleus",
-            hall_entree,
+            cafet,
             [
                 "Je suis Jolyne, et je suis venue pour te tuer.",
                 "Yare Yare Daze...",
             ],
+            patrol_rooms=[hall_entree, couloir1, couloir2, couloir3, entree, escalier, toit, musique, art, salle1, salle2, salle_profs, couloir_sport, gym],
+            escape_phrases=jolyne_escape_phrases,
         )
         victoria = Character(
             "Victoria",
@@ -513,6 +531,20 @@ class Game:
 
         jp = Character("JP", "son acolyte tout aussi inutile mais légèrement plus agressif", couloir3, [bullies_dialogue], immobile=True)
 
+        # Joseph and Jolyne hunt dialogue and patrol setup
+        joseph_hunt_dialogues = [
+            "Joseph: Tu ne m'échapperas pas...",
+            "Joseph: Bienvenue en enfer, mec.",
+            "Joseph: Tu aurais pas dû croiser mon chemin.",
+            "Joseph: C'est fini pour toi."
+        ]
+        jolyne_hunt_dialogues = [
+            "Jolyne: Je t'ai trouvé! Yare Yare Daze!",
+            "Jolyne: Tu croyais pouvoir t'échapper?",
+            "Jolyne: Maintenant c'est mon tour!",
+            "Jolyne: On m'a dit qu'on te cherchait..."
+        ]
+
         # Professeur Koro qui patrouille entre couloir2 et salle des profs
         koro = Character(
             "Professeur Koro",
@@ -532,7 +564,7 @@ class Game:
         )
 
         hall_entree.inventory[joseph.name] = joseph
-        hall_entree.inventory[jolyne.name] = jolyne
+        cafet.inventory[jolyne.name] = jolyne
         toit.inventory[victoria.name] = victoria
         couloir2.inventory[sophie.name] = sophie
         gym.inventory[maxou.name] = maxou
@@ -633,9 +665,10 @@ class Game:
                 self.finished = True
                 return
 
-            if success and command_word in ["go", "back"]:
-                for character in self.characters:
-                    character.move()
+            # Note: Characters now move inside go() and back() functions
+            # if success and command_word in ["go", "back"]:
+            #     for character in self.characters:
+            #         character.move()
 
     def print_welcome(self):
         """Affiche le message de bienvenue et la description de départ."""
