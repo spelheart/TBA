@@ -19,6 +19,10 @@ class Player():
         self.carnet_current_page = 0
         # Track if player is reading the carnet
         self.is_reading_carnet = False
+        # Track if player has talked to Max
+        self.talked_to_max = False
+        # Track if player has talked to Tunnel at the gym
+        self.talked_to_tunnel = False
 
     def get_current_weight(self) -> float:
         """Return the total weight of items currently carried by the player."""
@@ -43,8 +47,8 @@ class Player():
         
         # Set the current room to the next room.
         self.current_room = next_room
-        print(self.current_room.get_long_description())
         print(self.get_history())
+        print(self.current_room.get_long_description())
         
         return True
 

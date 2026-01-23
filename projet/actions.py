@@ -375,6 +375,46 @@ class Actions:
         
         character = room.inventory[character_name]
         
+        # Special handling for Max - mark that player talked to him
+        if character_name == "Max":
+            player.talked_to_max = True
+            # If player is in the gym and hasn't talked to Tunnel, it's a game over
+            if player.current_room.name == "Gymnase" and not player.talked_to_tunnel:
+                print("\n💀 Vous avez voulu aller parler à Max mais vous êtes passé sur le terrain sans regarder.")
+                print("Il y avait un match en cours et vous vous êtes reçu une balle en pleine figure.")
+                print("Quelle idée...\n")
+                return "LOSE"
+        
+        # Special handling for Tunnel - mark that player talked to them
+        if character_name == "Tunnel":
+            player.talked_to_tunnel = True
+        
+        # Special handling for Patoche and JP - bullies
+        if character_name in ["Patoche", "JP"]:
+            if not player.talked_to_max:
+                print("\nPatoche et JP te regardent avec mépris.\n")
+                print("Patoche: Dégage de là, le loser. On n'a pas de temps à perdre avec toi.\n")
+                print("JP: *te pousse violemment* Casse-toi !\n")
+                return True
+            
+            # Player has talked to Max, display dialogue and activate the exam quest if first time
+            if hasattr(character, 'get_msg'):
+                print(f"\n{character.get_msg()}\n")
+            
+            if player.quest_manager:
+                quete_exam = None
+                for quest in player.quest_manager.get_all_quests():
+                    if quest.title == "Les Sujets d'Examen":
+                        quete_exam = quest
+                        break
+                
+                # Activate the quest if not already active
+                if quete_exam and not quete_exam.is_active:
+                    quete_exam.activate()
+                    player.quest_manager.active_quests.append(quete_exam)
+            
+            return True
+        
         if hasattr(character, 'get_msg'):
             print(f"\n{character.get_msg()}\n")
         else:
