@@ -165,6 +165,14 @@ class Game:
             "down", " : descendre l'escalier", Actions.descend, 0, "Déplacement"
         )
         self.commands["down"] = down_cmd
+        help_help_cmd = Command(
+            "help_help",
+            " : obtenir un indice contextuel basé sur votre progression",
+            Actions.help_help,
+            0,
+            "Aide en cas d'urgence de blocage",
+        )
+        self.commands["help_help"] = help_help_cmd
 
         # Setup rooms
         hall_entree = Room(
@@ -501,14 +509,14 @@ class Game:
 
         tunnel_dialogue_return = "Tunnel: Ah te revoilà ! Alors, ça a été avec Maxou ? Il a l'air sympa mec. Enfin bon sympa c'est un grand mot. En tout cas il regarde attentivement hein. Mais écoute, tu peux pas partir maintenant, le match vient de commencer ! Regarde la foule, l'énergie, c'est dingue ! Les joueurs sont en feu ! L'équipe adverse a déjà marqué deux points, et notre équipe riposte... OUIIIII GOAL ! Tu vois ? T'aurais raté ça si tu t'en allais ! C'est ça la beauté du match en direct mec. Pas comme à la télé où tu peux mettre en pause. Non, ici c'est du live, du vrai ! Regarde ce buteur... c'est un genie ! Il dribble comme un fou, il esquive, il feinte... C'est de l'art ! Et puis tu sais quoi ? Le terrain est encore dangereux hein. Y a des ballons qui volent partout, des gens qui crient, qui sautent... C'est chaotique mais c'est magnifique. Et puis honnêtement, si tu sors du gymnase pendant que tu es entré faire une truffe, ça va pas passer inaperçu tu sais. Faut rester un peu, regarder la fin de la première mi-temps au moins. C'est par respect pour le jeu, pour les joueurs, pour moi aussi franchement ! Allez reste, on regarde ensemble. Je te montre les meilleurs joueurs, les tactiques... C'est clairement plus intéressant qu'à l'extérieur ! Et puis qui sait, peut-être que Maxou va demander comment c'était dehors ou un truc du genre..."
 
-        patoche = Character("Patoche", "", couloir3, [bullies_dialogue], immobile=True)
+        patoche = Character("Patoche", "un branleur chronique avec un air de caïd qui fonctionne pas bien", couloir3, [bullies_dialogue], immobile=True)
 
-        jp = Character("JP", "", couloir3, [bullies_dialogue], immobile=True)
+        jp = Character("JP", "son acolyte tout aussi inutile mais légèrement plus agressif", couloir3, [bullies_dialogue], immobile=True)
 
         # Professeur Koro qui patrouille entre couloir2 et salle des profs
         koro = Character(
             "Professeur Koro",
-            "un professeur strict qui fait sa ronde",
+            "un professeur strict qui fait sa ronde, tkt t'as pas le temps de le voir bouger",
             salle_profs,
             ["Professeur Koro: *vous jette un regard méfiant*"],
             immobile=True,  # Initialement immobile
@@ -517,7 +525,7 @@ class Game:
 
         tunnel = Character(
             "Tunnel",
-            "un spectateur bavard qui regarde le match sur le côté du terrain",
+            "un spectateur bavard qui regarde le match sur le côté du terrain, toujours prêt à discuter longuement",
             gym,
             [tunnel_dialogue, tunnel_dialogue_return],
             immobile=True,
@@ -555,7 +563,7 @@ class Game:
 
         # Quest Maxou (Main quest): Get money to buy Victoria's gift
         quete_maxou = Quest(
-            title="Séduire Victoria",
+            title="Le Prix du Chic",
             description="Maxou peut t'aider à trouver le cadeau parfait pour Victoria, "
             "mais il faut le payer. Rassemble 1000$ et donne-les à Maxou.",
             objectives=["Collecter 1000 dollars"],
@@ -564,32 +572,10 @@ class Game:
         self.player.quest_manager.add_quest(quete_maxou)
         # Don't activate yet - will be activated when talking to Maxou first time
 
-        # 1. Quête de déplacement : aller à la cafétéria
-        quete_deplacement = Quest(
-            title="Explorer la Cafétéria",
-            description="Rends-toi à la cafétéria.",
-            objectives=["Visiter Cafétéria"],
-            reward="Bon de réduction",
-        )
-        self.player.quest_manager.add_quest(quete_deplacement)
-        quete_deplacement.activate()
-        self.player.quest_manager.active_quests.append(quete_deplacement)
-
-        # 2. Quête d'interaction : parler à Jolyne
-        quete_interaction = Quest(
-            title="Parler à Jolyne",
-            description="Va parler à Jolyne pour récupérer 50 dollars.",
-            objectives=["parler avec Jolyne"],
-            reward="50 dollars",
-        )
-        self.player.quest_manager.add_quest(quete_interaction)
-        quete_interaction.activate()
-        self.player.quest_manager.active_quests.append(quete_interaction)
-
         # 3. Quête des harceleurs : obtenir les sujets d'examen
         # Cette quête n'est pas activée au début, elle le sera quand on parle à Patoche/JP
         quete_exam = Quest(
-            title="Les Sujets d'Examen",
+            title="Mission impossible",
             description="Patoche et JP t'ont forcé à voler les sujets d'examen dans la salle des profs. Le coffre fort est verrouillé par un code à 4 chiffres.",
             objectives=[
                 "Trouver le code du coffre fort",

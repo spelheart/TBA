@@ -93,7 +93,7 @@ class Actions:
             if player.quest_manager:
                 quete_exam = None
                 for quest in player.quest_manager.get_all_quests():
-                    if quest.title == "Les Sujets d'Examen" and quest.is_active:
+                    if quest.title == "Mission impossible" and quest.is_active:
                         quete_exam = quest
                         break
                 
@@ -200,7 +200,7 @@ class Actions:
                 should_show = False
                 if game.player.quest_manager:
                     for quest in game.player.quest_manager.get_all_quests():
-                        if quest.title == "Les Sujets d'Examen" and quest.is_active:
+                        if quest.title == "Mission impossible" and quest.is_active:
                             should_show = True
                             break
             
@@ -216,6 +216,48 @@ class Actions:
                 print("\t- " + str(command))
             print()
 
+        return True
+
+    def help_help(game, list_of_words, number_of_parameters):
+        """Affiche un indice contextuel basé sur l'état des quêtes.
+        Usage: `help_help` (aucun paramètre)
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG0.format(command_word=command_word))
+            return False
+
+        player = game.player
+        
+        # Vérifier l'état des quêtes
+        quete_exam = None
+        quete_victoria = None
+        
+        if player.quest_manager:
+            for quest in player.quest_manager.get_all_quests():
+                if quest.title == "Mission impossible":
+                    quete_exam = quest
+                if quest.title == "Le Prix du Chic":
+                    quete_victoria = quest
+        
+        # Déterminer le message d'aide basé sur l'état des quêtes
+        message = ""
+        
+        # Si la quête exam est activée et pas terminée
+        if quete_exam and quete_exam.is_active and not quete_exam.is_completed:
+            message = "peut etre que parler aux gens qui vous sont chère serait utile"
+        # Si la quête exam n'est pas activée et Victoria est activée
+        elif (not quete_exam or not quete_exam.is_active) and quete_victoria and quete_victoria.is_active and not quete_victoria.is_completed:
+            message = "attention à ne pas vous faire raquetter"
+        # Si les deux quêtes sont terminées
+        elif quete_exam and quete_exam.is_completed and quete_victoria and quete_victoria.is_completed:
+            message = "quelle douce mélodie qu'est celle de la proche victoire"
+        # Si aucune n'est activée
+        else:
+            message = "abuse, joue un peu avant de demander de l'aide"
+        
+        print(f"\n💡 {message}\n")
         return True
 
     def back(game, list_of_words, number_of_parameters):
@@ -468,7 +510,7 @@ class Actions:
             quete_exam_active = False
             if player.quest_manager:
                 for quest in player.quest_manager.get_all_quests():
-                    if quest.title == "Les Sujets d'Examen" and quest.is_active:
+                    if quest.title == "Mission impossible" and quest.is_active:
                         quete_exam_active = True
                         break
 
@@ -670,6 +712,13 @@ class Actions:
             print(f"\n💀 {character_name} vous surprend en train d'essayer d'ouvrir le coffre fort !")
             print(f"{character_name}: QU'EST-CE QUE VOUS FAITES LÀ ?! GAME OVER.\n")
             return "LOSE"
+        
+        # Also check if any character from game.characters is in the room (for patrol/dynamic NPCs)
+        for character in game.characters:
+            if character.current_room == room:
+                print(f"\n💀 {character.name} vous surprend en train d'essayer d'ouvrir le coffre fort !")
+                print(f"{character.name}: QU'EST-CE QUE VOUS FAITES LÀ ?! GAME OVER.\n")
+                return "LOSE"
 
         # If already opened
         if player.casier_opened:
@@ -707,7 +756,7 @@ class Actions:
         # Marquer les objectifs liés au coffre fort, sans terminer la quête
         if player.quest_manager:
             for quest in player.quest_manager.get_all_quests():
-                if quest.title == "Les Sujets d'Examen":
+                if quest.title == "Mission impossible":
                     # Mettre à jour la formulation pour 'coffre fort'
                     quest.complete_objective("Ouvrir le coffre fort", player)
                     quest.complete_objective("Récupérer les sujets d'examen", player)
