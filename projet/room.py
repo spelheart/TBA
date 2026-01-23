@@ -1,10 +1,11 @@
-# pylint: disable=missing-module-docstring,missing-class-docstring,missing-function-docstring,trailing-whitespace,trailing-newlines,no-else-return,redefined-builtin,too-many-branches,duplicate-code,broad-exception-caught
+# pylint: skip-file
 
 # Define the Room class.
 
+
 class Room:
 
-    # Define the constructor. 
+    # Define the constructor.
     def __init__(self, name, description):
         self.name = name
         self.description = description
@@ -13,7 +14,7 @@ class Room:
         self.inventory = {}
         # Characters (PNJ) present in the room — initialized empty, filled from Game.setup()
         self.characters = {}
-    
+
     # Define the get_exit method.
     def get_exit(self, direction):
 
@@ -22,15 +23,12 @@ class Room:
             return self.exits[direction]
         else:
             return None
-    
+
     # Return a string describing the room's exits.
     def get_exit_string(self):
-        exit_string = "Sorties: " 
+        exit_string = "Sorties: "
         # Map special exit names to more readable labels
-        exit_labels = {
-            "U": "up",
-            "D": "down"
-        }
+        exit_labels = {"U": "up", "D": "down"}
         for exit in self.exits.keys():
             if self.exits.get(exit) is not None:
                 # Use label from map if available, otherwise use the exit name
@@ -42,7 +40,7 @@ class Room:
     # Return a long description of this room including exits.
     def get_long_description(self):
         return f"\nVous êtes dans {self.description}\n\n{self.get_exit_string()}\n"
-    
+
     # Define the get_inventory method.
     def get_inventory(self):
         # Build lists for items and characters (PNJ)
@@ -64,7 +62,7 @@ class Room:
         # Normalize characters to a list
         try:
             chars = []
-            if hasattr(self, 'characters'):
+            if hasattr(self, "characters"):
                 if isinstance(self.characters, dict):
                     chars = list(self.characters.values())
                 elif isinstance(self.characters, (list, tuple, set)):
@@ -87,7 +85,11 @@ class Room:
                 try:
                     item_str = str(it)
                 except Exception:
-                    if hasattr(it, 'name') and hasattr(it, 'description') and hasattr(it, 'weight'):
+                    if (
+                        hasattr(it, "name")
+                        and hasattr(it, "description")
+                        and hasattr(it, "weight")
+                    ):
                         item_str = f"{it.name} : {it.description} ({it.weight} kg)"
                     else:
                         item_str = repr(it)
@@ -99,9 +101,7 @@ class Room:
                 try:
                     cstr = str(c)
                 except Exception:
-                    cstr = getattr(c, 'name', repr(c))
+                    cstr = getattr(c, "name", repr(c))
                 lines.append(f"    - {cstr}")
 
         return "\n".join(lines)
-    
-

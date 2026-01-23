@@ -19,15 +19,9 @@ def piano_effect(game):
     """
     print("\n🎹 Vous jouez une magnifique mélodie au piano...\n")
     print("Soudain, un grondement résonne dans la salle !")
-    print(
-        "L'escalier secret commence à descendre du plafond "
-        "avec un bruit sourd...\n"
-    )
+    print("L'escalier secret commence à descendre du plafond avec un bruit sourd...\n")
     print("✨ Un escalier en colimaçon apparaît maintenant dans la salle !\n")
-    print(
-        "Vous pouvez maintenant utiliser 'up' et 'down' "
-        "pour accéder à la salle secrète.\n"
-    )
+    print("Vous pouvez maintenant utiliser 'up' et 'down' pour accéder à la salle secrète.\n")
 
     # Connecter l'escalier secret
     for room in game.rooms:
@@ -36,6 +30,25 @@ def piano_effect(game):
                 if other_room.name == "Salle secrète":
                     room.exits["U"] = other_room
                     other_room.exits["D"] = room
+
+
+def maxou_secret_room_effect(game):
+    """Fonction appelée quand le joueur complète la quête Maxou.
+    Maxou appuie sur un levier et la porte secrète s'ouvre dans les tribunes du gym.
+    """
+    print("\n🎯 Maxou appuie sur un levier à ses pieds...\n")
+    print("*CRAC* *GRINCEMENT*\n")
+    print("Une porte secrète se dessine lentement dans les bancs des tribunes !")
+    print("La paroi s'éclaire d'une lueur mystérieuse...\n")
+    print("✨ Tu peux maintenant accéder à la réserve secrète de Maxou !\n")
+
+    # Connecter le gymnase à la salle de Victoria
+    for room in game.rooms:
+        if room.name == "Gymnase":
+            for other_room in game.rooms:
+                if other_room.name == "Réserve Victoria":
+                    room.exits["E"] = other_room
+                    other_room.exits["O"] = room
 
 
 class Game:
@@ -65,17 +78,19 @@ class Game:
             " <direction> : se déplacer dans une direction cardinale (N, E, S, O)",
             Actions.go,
             1,
-            "Déplacement"
+            "Déplacement",
         )
         self.commands["go"] = go_cmd
-        back_cmd = Command("back", " : revenir à la pièce précédente", Actions.back, 0, "Déplacement")
+        back_cmd = Command(
+            "back", " : revenir à la pièce précédente", Actions.back, 0, "Déplacement"
+        )
         self.commands["back"] = back_cmd
         look_cmd = Command(
             "look",
             " : afficher les items ou les personnages présents dans la pièce",
             Actions.look,
             0,
-            "Visualisation"
+            "Visualisation",
         )
         self.commands["look"] = look_cmd
         take_cmd = Command(
@@ -83,7 +98,7 @@ class Game:
             " <item> : ramasser un item présent dans la pièce",
             Actions.take,
             1,
-            "Interaction"
+            "Interaction",
         )
         self.commands["take"] = take_cmd
         drop_cmd = Command(
@@ -91,28 +106,64 @@ class Game:
             " <item> : déposer un item de votre inventaire dans la pièce",
             Actions.drop,
             1,
-            "Interaction"
+            "Interaction",
         )
         self.commands["drop"] = drop_cmd
-        check_cmd = Command("check", " : afficher les détails de votre "
-                            "inventaire", Actions.check, 0, "Visualisation")
+        check_cmd = Command(
+            "check",
+            " : afficher les détails de votre inventaire",
+            Actions.check,
+            0,
+            "Visualisation",
+        )
         self.commands["check"] = check_cmd
-        talk_cmd = Command("talk", " <character> : parler à un personnage",
-                           Actions.talk, 1, "Interaction")
+        talk_cmd = Command(
+            "talk",
+            " <character> : parler à un personnage",
+            Actions.talk,
+            1,
+            "Interaction",
+        )
         self.commands["talk"] = talk_cmd
-        quests_cmd = Command("quests", " : afficher la liste de vos quêtes",
-                             Actions.show_quests, 0, "Quêtes")
+        quests_cmd = Command(
+            "quests",
+            " : afficher la liste de vos quêtes",
+            Actions.show_quests,
+            0,
+            "Quêtes",
+        )
         self.commands["quests"] = quests_cmd
-        quest_cmd = Command("quest", " <nom> : afficher les détails "
-                           "d'une quête", Actions.show_quest_details, 1, "Quêtes")
+        quest_cmd = Command(
+            "quest",
+            " <nom> : afficher les détails d'une quête",
+            Actions.show_quest_details,
+            1,
+            "Quêtes",
+        )
         self.commands["quest"] = quest_cmd
-        play_cmd = Command("play", " <instrument> : jouer d'un instrument", Actions.play, 1, "Interaction")
+        play_cmd = Command(
+            "play",
+            " <instrument> : jouer d'un instrument",
+            Actions.play,
+            1,
+            "Interaction",
+        )
         self.commands["play"] = play_cmd
         read_cmd = Command("read", " <item> : lire", Actions.read, 1, "Interaction")
         self.commands["read"] = read_cmd
+        open_cmd = Command(
+            "open",
+            " coffre fort : ouvrir le coffre fort de la salle des profs",
+            Actions.open_safe,
+            0,
+            "Interaction",
+        )
+        self.commands["open"] = open_cmd
         up_cmd = Command("up", " : monter l'escalier", Actions.climb, 0, "Déplacement")
         self.commands["up"] = up_cmd
-        down_cmd = Command("down", " : descendre l'escalier", Actions.descend, 0, "Déplacement")
+        down_cmd = Command(
+            "down", " : descendre l'escalier", Actions.descend, 0, "Déplacement"
+        )
         self.commands["down"] = down_cmd
 
         # Setup rooms
@@ -167,8 +218,9 @@ class Game:
             "du premier ça. Oups...",
         )
         self.rooms.append(couloir2)
-        couloir3 = Room("Fin du couloir",
-                        "la fin du couloir. Déso mais t'iras pas plus loin.")
+        couloir3 = Room(
+            "Fin du couloir", "la fin du couloir. Déso mais t'iras pas plus loin."
+        )
         self.rooms.append(couloir3)
         escalier = Room(
             "Escalier menant au toit",
@@ -183,15 +235,16 @@ class Game:
             "redescendre.",
         )
         self.rooms.append(toit)
-        entree = Room("Entrée de l'école",
-                      "l'entrée de l'école. Vous faites face à une grande "
-                      "porte vitrée.")
+        entree = Room(
+            "Entrée de l'école",
+            "l'entrée de l'école. Vous faites face à une grande porte vitrée.",
+        )
         self.rooms.append(entree)
         couloir_sport = Room(
             "couloir menant au gymnase",
             "un couloir sportif où résonnent les bruits de ballons qui rebondissent. "
             "Les murs sont décorés de trophées d'équipes de basket et de volley. "
-            "L'odeur caractéristique du gymnase s'intensifie à chaque pas."
+            "L'odeur caractéristique du gymnase s'intensifie à chaque pas.",
         )
         self.rooms.append(couloir_sport)
         gym = Room(
@@ -199,7 +252,7 @@ class Game:
             "un immense gymnase avec des gradins sur les côtés. "
             "Un match de basket fait rage actuellement sur le terrain. "
             "Les cris des joueurs et du public résonnent dans la salle. "
-            "L'ambiance est électrique !"
+            "L'ambiance est électrique !",
         )
         self.rooms.append(gym)
         cafet = Room("Cafétéria", ".")
@@ -207,21 +260,20 @@ class Game:
 
         salle_secrete = Room(
             "Salle secrète",
-            "une salle secrète cachée au dessus de la salle de musique. La salle est relativement petite,"
-            "un vieux bureau de classe y est situé, c'est peut être une sorte de débaras abandonné."
-            "ou pas qui sait, le mystère de cette salle reste entier."
+            "une salle secrète cachée au dessus de la salle de musique. La salle est relativement petite, "
+            "ou pas qui sait, le mystère de cette salle reste entier.",
         )
         self.rooms.append(salle_secrete)
 
         salle_victoria = Room(
             "Réserve Victoria",
-            "une salle isolée et mystérieuse réservée au stockage des objets de Victoria."
+            "une salle isolée et mystérieuse réservée au stockage des objets de Victoria.",
         )
         self.rooms.append(salle_victoria)
 
         salle_profs = Room(
             "Salle des profs",
-            "la salle des professeurs. Un grand bureau trône au centre, et un casier métallique verrouillé attire votre attention."
+            "la salle des professeurs. Un grand bureau trône au centre, et un casier métallique verrouillé attire votre attention.",
         )
         self.rooms.append(salle_profs)
 
@@ -229,31 +281,69 @@ class Game:
         hall_entree.exits = {"N": None, "E": couloir1, "S": None, "O": entree}
         salle2.exits = {"N": couloir3, "E": None, "S": None, "O": None}
         salle1.exits = {"N": None, "E": None, "S": couloir2, "O": None}
-        couloir1.exits = {"N": cafet, "E": couloir2, "S": couloir_sport, "O": hall_entree}
+        couloir1.exits = {
+            "N": cafet,
+            "E": couloir2,
+            "S": couloir_sport,
+            "O": hall_entree,
+        }
         couloir2.exits = {"N": salle1, "E": couloir3, "S": salle_profs, "O": couloir1}
         couloir3.exits = {"N": art, "E": escalier, "S": salle2, "O": couloir2}
         salle_profs.exits = {"N": couloir2, "E": None, "S": None, "O": None}
         entree.exits = {"N": None, "E": hall_entree, "S": None, "O": None}
-        escalier.exits = {"N": None, "E": None, "S": None, "O": couloir3, "U": toit, "D": None}
-        toit.exits = {"N": None, "E": None, "S": None, "O": None, "U": None, "D": escalier}
+        escalier.exits = {
+            "N": None,
+            "E": None,
+            "S": None,
+            "O": couloir3,
+            "U": toit,
+            "D": None,
+        }
+        toit.exits = {
+            "N": None,
+            "E": None,
+            "S": None,
+            "O": None,
+            "U": None,
+            "D": escalier,
+        }
         couloir_sport.exits = {"N": couloir1, "E": None, "S": gym, "O": None}
         gym.exits = {"N": couloir_sport, "E": None, "S": None, "O": None}
         art.exits = {"N": None, "E": None, "S": couloir3, "O": None}
-        musique.exits = {"N": couloir3, "E": None, "S": None, "O": None, "U": None, "D": None}
+        musique.exits = {
+            "N": couloir3,
+            "E": None,
+            "S": None,
+            "O": None,
+            "U": None,
+            "D": None,
+        }
         cafet.exits = {"N": None, "E": None, "S": couloir1, "O": None}
-        salle_secrete.exits = {"N": None, "E": None, "S": None, "O": None, "U": None, "D": musique}
-
-        # Add items to the hall d'entrée
-        casier = Item(
-            "casier",
-            "un casier métallique verrouillé, idéal pour y ranger ses affaires",
+        salle_secrete.exits = {
+            "N": None,
+            "E": None,
+            "S": None,
+            "O": None,
+            "U": None,
+            "D": musique,
+        }
+        salle_victoria.exits = {"N": None, "E": None, "S": None, "O": None}
+        coffre_fort = Item(
+            "coffre fort",
+            "un coffre-fort métallique verrouillé, idéal pour y ranger ses affaires",
             20,
         )
-        journal = Item("journal intime de Victoria", "un vieux journal intime jauni par le temps", 1)
-        copie = Item("piles de copies d'examen", "une copie d'examen avec une note de 0/20", 1)
-        hall_entree.inventory[casier.name] = casier
+        journal = Item(
+            "journal intime de Victoria",
+            "un vieux journal intime jauni par le temps",
+            1,
+        )
+        copie = Item(
+            "piles de copies d'examen", "une copie d'examen avec une note de 0/20", 1
+        )
+        salle_profs.inventory[coffre_fort.name] = coffre_fort
         musique.inventory[journal.name] = journal
-        salle1.inventory[copie.name] = copie
+        # Les copies d'examen sont dans le coffre fort (à ouvrir) - ne pas les ajouter au démarrage
 
         # objet de la réserve de Victoria
         collier_diamants = Item(
@@ -286,6 +376,11 @@ class Game:
             "un flacon iconique de Chanel No. 5, parfum intemporel",
             0.5,
         )
+        bague = Item(
+            "bague en or blanc avec une pierre bleue",
+            "une bague en or blanc sertie d'une pierre bleue étincelante",
+            0.1
+        )
 
         salle_victoria.inventory[collier_diamants.name] = collier_diamants
         salle_victoria.inventory[chaussures_louboutin.name] = chaussures_louboutin
@@ -293,7 +388,8 @@ class Game:
         salle_victoria.inventory[montre_rolex.name] = montre_rolex
         salle_victoria.inventory[foulard_hermes.name] = foulard_hermes
         salle_victoria.inventory[parfum_chanel.name] = parfum_chanel
-
+        salle_victoria.inventory[bague.name] = bague
+        
         # Add instruments to music room
         piano = Instrument(
             "piano",
@@ -313,7 +409,9 @@ class Game:
             "batterie",
             "une batterie complète avec cymbales",
             50,
-            lambda game: print("\n🥁 Vous jouez de la batterie avec énergie ! Le rythme envahit la salle.\n"),
+            lambda game: print(
+                "\n🥁 Vous jouez de la batterie avec énergie ! Le rythme envahit la salle.\n"
+            ),
         )
 
         musique.inventory[piano.name] = piano
@@ -323,6 +421,13 @@ class Game:
         # Add items to the secret room
         canet = Item("canet", "un petit canet rouillé, probablement très ancien", 0.1)
         salle_secrete.inventory[canet.name] = canet
+
+        # Cadeau pour Victoria (récompense Maxou)
+        cadeau_victoria = Item(
+            "cadeau_victoria",
+            "Un magnifique cadeau de rêve pour séduire Victoria",
+            0.5,
+        )
 
         # Add characters
         joseph = Character(
@@ -351,16 +456,30 @@ class Game:
                 "C'est mignon ce que tu dis, mais est-ce que ça brille ?",
                 "Désolée, je ne parle pas aux gens qui portent du polyester.",
             ],
-            immobile=True
+            immobile=True,
         )
         sophie = Character(
             "Sophie",
             "la meilleure amie de Victoria (en vrai elle l'aime pas)",
             couloir2,
             ["Salut.", "Je ne."],
-            immobile=True
+            immobile=True,
         )
-        Max = Character("Max", "un boug pas random du jeu. Il regarde le match tranquillement de l'autre côté du terrain.", gym, ["Salut.", "Je ne."], immobile=True)
+        maxou = Character(
+            "Maxou",
+
+            "un boug pas random du jeu. Il regarde le match "
+            "tranquillement de l'autre côté du terrain.",
+            gym,
+            [
+                "Yo, t'as besoin d'un truc ? J'ai tout ce qu'il faut...",
+                "Victoria ? Ouais, je peux t'aider à lui plaire.",
+                "Ça va te coûter 1000$. C'est mon tarif.",
+                "T'as l'argent ? Ramène-moi 1000$ et je te donne le cadeau qui va la conquérir.",
+            ],
+            immobile=True,
+        )
+
         lucas = Character(
             "Lucas",
             "ton meilleur ami depuis toujours",
@@ -369,50 +488,63 @@ class Game:
                 "Yo mec ! Tu veux connaître un truc ? Tu vois Victoria :) ? J'ai entendu dire que celui qui arriverait à la satisfaire et faire chavirer son cœur... elle accepterait de sortir avec lui !",
                 "Mais attention hein... elle a déjà rejeté plus d'une quinzaine de mecs en les insultant copieusement. C'est une vraie folle furieuse cette fille !",
                 "Je sais que c'est la fille de tes rêves, mais c'est vraiment pas gagné...",
+                "Au fait, j'ai entendu un truc sur un casier verrouillé : 'Les lettres comptent beaucoup'. J'ai jamais pigé, peut-être que toi tu trouveras le code...",
             ],
-            immobile=True
+            immobile=True,
         )
 
         # Shared dialogue for Patoche and JP
         bullies_dialogue = "Patoche: Putain JP, on est dans la merde pour l'exam de dans 2 jours...\nJP: Ouais grave, si on rate on va finir aux rattrapages et on va louper le voyage d'été avec l'école !\nPatoche: Faut absolument qu'on trouve un moyen de...\nJP: *Ils s'arrêtent brusquement et te remarquent*\nPatoche et JP: Tiens, tiens... Regarde qui voilà.\nPatoche: On a un petit boulot pour toi, le loser.\nJP: Tu vas nous trouver les sujets d'examen en avance. Ils sont dans un casier dans la salle des profs, verrouillé par un code à 4 chiffres.\nPatoche: Et ne t'avise pas de refuser... sinon on te dépouille de TOUT ce que tu as.\nJP: On te filera du fric après, on va les revendre aux autres élèves. Maintenant bouge-toi !"
 
         # Tunnel NPC who talks a lot
-        tunnel_dialogue = "Tunnel: Salut ! Tu regardais le match ? Ouais c'était fou ! Enfin bon pas encore, mais ça va commencer. Tu sais, je viens à tous les matchs depuis 3 ans. Trois ans ! Mon équipe préférée joue aujourd'hui. Bon elle perd tout le temps mais bon, je soutiens quand même. L'autre jour tu sais, il y avait ce gars... Max c'est son nom je crois, il regardait le match sur les gradins. Pas mal ce mec. Il regarde vraiment attentivement tu sais, il bouge pas beaucoup mais il regarde. C'est impressionnant de regarder quelqu'un regarder un match. Enfin bref, le truc c'est que le terrain il est dangereux. Très dangereux. Pas pour les joueurs hein, pour ceux qui traînent au milieu. Zzzzt ! Un ballon qui fait pchhhh en pleine face, c'est violent ce jeu ! Ça m'est presque arrivé une fois. Une fois ! J'ai failli me prendre un ballon en pleine tête. Peut tu imaginer ? Moi qui suis là tranquille, boom ballon en pleine gueule. C'est dingue. Donc si tu veux vraiment parler à Max sans te faire écrabouiller par un ballon, faut pas foncer direct sur le terrain comme un débile. Non non non, c'est pas bon ça. Tu dois contourner, contourner par le côté comme je le fais moi depuis 3 ans. Ouais depuis 3 ans je contourne. C'est pas trop difficile mais ça prend du temps. Du temps que tu dois pas gaspiller en courant comme un fou. Si tu veux vraiment lui parler, je peux te montrer le chemin. Je connais bien je te dis. Allez viens, je vais te guider pas à pas. C'est pas compliqué mais faut pas se presser. Vraiment pas. Tu vas voir, ça va être cool."
+        tunnel_dialogue = "Tunnel: Salut ! Tu regardais le match ? Ouais c'était fou ! Enfin bon pas encore, mais ça va commencer. Tu sais, je viens à tous les matchs depuis 3 ans. Trois ans ! Mon équipe préférée joue aujourd'hui. Bon elle perd tout le temps mais bon, je soutiens quand même. L'autre jour tu sais, il y avait ce gars... Maxou c'est son nom je crois, il regardait le match sur les gradins. Pas mal ce mec. Il regarde vraiment attentivement tu sais, il bouge pas beaucoup mais il regarde. C'est impressionnant de regarder quelqu'un regarder un match. Enfin bref, le truc c'est que le terrain il est dangereux. Très dangereux. Pas pour les joueurs hein, pour ceux qui traînent au milieu. Zzzzt ! Un ballon qui fait pchhhh en pleine face, c'est violent ce jeu ! Ça m'est presque arrivé une fois. Une fois ! J'ai failli me prendre un ballon en pleine tête. Peut tu imaginer ? Moi qui suis là tranquille, boom ballon en pleine gueule. C'est dingue. Donc si tu veux vraiment parler à Maxou sans te faire écrabouiller par un ballon, faut pas foncer direct sur le terrain comme un débile. Non non non, c'est pas bon ça. Tu dois contourner, contourner par le côté comme je le fais moi depuis 3 ans. Ouais depuis 3 ans je contourne. C'est pas trop difficile mais ça prend du temps. Du temps que tu dois pas gaspiller en courant comme un fou. Si tu veux vraiment lui parler, je peux te montrer le chemin. Je connais bien je te dis. Allez viens, je vais te guider pas à pas. C'est pas compliqué mais faut pas se presser. Vraiment pas. Tu vas voir, ça va être cool."
 
-        patoche = Character(
-            "Patoche",
-            "",
-            couloir3,
-            [bullies_dialogue],
-            immobile=True
-        )
+        tunnel_dialogue_return = "Tunnel: Ah te revoilà ! Alors, ça a été avec Maxou ? Il a l'air sympa mec. Enfin bon sympa c'est un grand mot. En tout cas il regarde attentivement hein. Mais écoute, tu peux pas partir maintenant, le match vient de commencer ! Regarde la foule, l'énergie, c'est dingue ! Les joueurs sont en feu ! L'équipe adverse a déjà marqué deux points, et notre équipe riposte... OUIIIII GOAL ! Tu vois ? T'aurais raté ça si tu t'en allais ! C'est ça la beauté du match en direct mec. Pas comme à la télé où tu peux mettre en pause. Non, ici c'est du live, du vrai ! Regarde ce buteur... c'est un genie ! Il dribble comme un fou, il esquive, il feinte... C'est de l'art ! Et puis tu sais quoi ? Le terrain est encore dangereux hein. Y a des ballons qui volent partout, des gens qui crient, qui sautent... C'est chaotique mais c'est magnifique. Et puis honnêtement, si tu sors du gymnase pendant que tu es entré faire une truffe, ça va pas passer inaperçu tu sais. Faut rester un peu, regarder la fin de la première mi-temps au moins. C'est par respect pour le jeu, pour les joueurs, pour moi aussi franchement ! Allez reste, on regarde ensemble. Je te montre les meilleurs joueurs, les tactiques... C'est clairement plus intéressant qu'à l'extérieur ! Et puis qui sait, peut-être que Maxou va demander comment c'était dehors ou un truc du genre..."
 
-        jp = Character(
-            "JP",
-            "",
-            couloir3,
-            [bullies_dialogue],
-            immobile=True
+        patoche = Character("Patoche", "", couloir3, [bullies_dialogue], immobile=True)
+
+        jp = Character("JP", "", couloir3, [bullies_dialogue], immobile=True)
+
+        # Professeur Koro qui patrouille entre couloir2 et salle des profs
+        koro = Character(
+            "Professeur Koro",
+            "un professeur strict qui fait sa ronde",
+            salle_profs,
+            ["Professeur Koro: *vous jette un regard méfiant*"],
+            immobile=True,  # Initialement immobile
+            patrol_rooms=[couloir2, salle_profs],
         )
 
         tunnel = Character(
             "Tunnel",
             "un spectateur bavard qui regarde le match sur le côté du terrain",
             gym,
-            [tunnel_dialogue],
-            immobile=True
+            [tunnel_dialogue, tunnel_dialogue_return],
+            immobile=True,
         )
 
         hall_entree.inventory[joseph.name] = joseph
         hall_entree.inventory[jolyne.name] = jolyne
         toit.inventory[victoria.name] = victoria
         couloir2.inventory[sophie.name] = sophie
-        gym.inventory[Max.name] = Max
+        gym.inventory[maxou.name] = maxou
         gym.inventory[tunnel.name] = tunnel
         salle1.inventory[lucas.name] = lucas
         couloir3.inventory[patoche.name] = patoche
         couloir3.inventory[jp.name] = jp
-        self.characters = [joseph, jolyne, victoria, sophie, Max, tunnel, lucas, patoche, jp]
+        salle_profs.inventory[koro.name] = koro
+        self.characters = [
+            joseph,
+            jolyne,
+            victoria,
+            sophie,
+            maxou,
+            tunnel,
+            lucas,
+            patoche,
+            jp,
+            koro,
+        ]
 
         # Setup player and starting room
         self.player = Player(input("\nEntrez votre nom: "))
@@ -420,6 +552,17 @@ class Game:
 
         # Setup quest manager
         self.player.quest_manager = QuestManager(self.player)
+
+        # Quest Maxou (Main quest): Get money to buy Victoria's gift
+        quete_maxou = Quest(
+            title="Séduire Victoria",
+            description="Maxou peut t'aider à trouver le cadeau parfait pour Victoria, "
+            "mais il faut le payer. Rassemble 1000$ et donne-les à Maxou.",
+            objectives=["Collecter 1000 dollars"],
+            reward=None,  # Reward: Access to Maxou's secret room
+        )
+        self.player.quest_manager.add_quest(quete_maxou)
+        # Don't activate yet - will be activated when talking to Maxou first time
 
         # 1. Quête de déplacement : aller à la cafétéria
         quete_deplacement = Quest(
@@ -447,18 +590,25 @@ class Game:
         # Cette quête n'est pas activée au début, elle le sera quand on parle à Patoche/JP
         quete_exam = Quest(
             title="Les Sujets d'Examen",
-            description="Patoche et JP t'ont forcé à voler les sujets d'examen dans la salle des profs. Le casier est verrouillé par un code à 4 chiffres.",
-            objectives=["Trouver le code du casier", "Récupérer les sujets d'examen"],
+            description="Patoche et JP t'ont forcé à voler les sujets d'examen dans la salle des profs. Le coffre fort est verrouillé par un code à 4 chiffres.",
+            objectives=[
+                "Trouver le code du coffre fort",
+                "Ouvrir le coffre fort",
+                "Récupérer les sujets d'examen",
+                "Remettre les copies à Patoche et JP",
+            ],
             reward="1000 dollars",
         )
         self.player.quest_manager.add_quest(quete_exam)
-        # Quest will be activated when talking to Patoche or JP (after talking to Max)
+        # Quest will be activated when talking to Patoche or JP (after talking to Maxou)
 
     def win(self):
         """Retourne True si toutes les quêtes sont complètes."""
         if not self.player.quest_manager:
             return False
-        return all(quest.is_completed for quest in self.player.quest_manager.get_all_quests())
+        return all(
+            quest.is_completed for quest in self.player.quest_manager.get_all_quests()
+        )
 
     def loose(self):
         """Retourne True si la condition de défaite est remplie."""
@@ -470,7 +620,9 @@ class Game:
         self.print_welcome()
         while not self.finished:
             if self.win():
-                print("\n🏆 Félicitations ! Vous avez complété toutes les quêtes et gagné la partie !\n")
+                print(
+                    "\n🏆 Félicitations ! Vous avez complété toutes les quêtes et gagné la partie !\n"
+                )
                 self.finished = True
                 break
             if self.loose():
@@ -488,13 +640,13 @@ class Game:
         else:
             command = self.commands[command_word]
             success = command.action(self, list_of_words, command.number_of_parameters)
-            
+
             # Check if the action returned a LOSE signal
             if success == "LOSE":
                 print("\n☠️ Vous avez perdu la partie.\n")
                 self.finished = True
                 return
-            
+
             if success and command_word in ["go", "back"]:
                 for character in self.characters:
                     character.move()

@@ -5,7 +5,7 @@ class Quest:
     """
     This class represents a quest in the game. A quest has a title, description,
     objectives, completion status, and optional rewards.
-    
+
     Attributes:
         title (str): The title of the quest.
         description (str): The description of the quest.
@@ -81,7 +81,9 @@ class Quest:
             details += "\nObjectifs:\n"
             for objective in self.objectives:
                 status = "✅" if objective in self.completed_objectives else "⬜"
-                objective_text = self._format_objective_with_progress(objective, current_counts)
+                objective_text = self._format_objective_with_progress(
+                    objective, current_counts
+                )
                 details += f"  {status} {objective_text}\n"
 
         if self.reward:
@@ -117,7 +119,7 @@ class Quest:
             f"Visiter {room_name}",
             f"Explorer {room_name}",
             f"Aller à {room_name}",
-            f"Entrer dans {room_name}"
+            f"Entrer dans {room_name}",
         ]
 
         for objective in room_objectives:
@@ -132,7 +134,7 @@ class Quest:
                 f"{action} {target}",
                 f"{action} avec {target}",
                 f"{action} le {target}",
-                f"{action} la {target}"
+                f"{action} la {target}",
             ]
         else:
             objective_variations = [action]
@@ -163,7 +165,7 @@ class Quest:
 class QuestManager:
     """
     This class manages all quests in the game.
-    
+
     Attributes:
         quests (list): List of all quests in the game.
         active_quests (list): List of currently active quests.
