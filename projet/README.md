@@ -51,9 +51,16 @@ Le lycée est composé de nombreux lieux explorables indispensables à l'intrigu
 
 #### Victoire
 
-
+- Conquérir Victoria
 
 #### Défaite 
+
+- Perdre le mini-jeu de Jolyne ou Joseph
+- Se faire recaler par Victoria 
+- Voler les copies devant le prof ou un élève
+- Traverser le milieu du terrain pour rejoindre Max
+- Manger le sandwich
+- Prendre plus d'un objet dans la salle de Max
 
 ### Comment jouer ?
 
@@ -97,7 +104,28 @@ Le jeu se contrôle via une série de commandes textuelles simples :
 #### Exemples
 
 ```bash
-python game.py
+> go E 
+
+Voici les pièces que vous avez visitées :
+- Entrée de l'école
+
+
+Vous êtes dans le hall d'entrée du lycée, où des casiers métalliques sont installés pour y ranger vos chaussures d'extérieur, ou votre parapluie, ou encore décharger une part de votre sac à dos parcequ'on est pas hulk et porter 18 manuels c'est pas un objectif de vie.
+
+> look
+La pièce contient :
+    - Joseph : un personnage mystérieux 
+
+> talk Joseph
+
+⚠️ Joseph: Tu aurais pas dû faire ça...
+
+Il te prend en chasse!
+
+
+Salut, je m'appelle Joseph. Bienvenue en enfer...
+
+
 ```
 
 ### Structuration
@@ -257,5 +285,22 @@ classDiagram
 ```
 
 ## Perspectives d'améliorations
+
+### 🌍 Accessibilité et Localisation
+
+- Francisation complète : Uniformiser l'expérience utilisateur en passant l'intégralité des commandes et des interactions en français.
+
+- Internationalisation (i18n) : Traduire le jeu en plusieurs langues (anglais, espagnol, etc.) pour toucher une audience mondiale
+
+### 🖥️ Interface et Expérience Utilisateur (UX/UI)
+
+- Interface Graphique (GUI) : Passer d'une version textuelle à une véritable interface visuelle (avec des boutons, des barres de progression pour la relation avec Vic, et des visuels pour les mini-jeux).
+
+### 🎮 Enrichissement du Gameplay
+
+- Système de sauvegarde : Permettre au joueur de reprendre sa partie après une défaite (particulièrement utile après avoir mangé ce fameux sandwich !).
+
+- Arborescence narrative : Développer davantage de conséquences pour chaque défaite afin que le jeu ait une plus grande rejouabilité.
+
 
 
