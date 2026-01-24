@@ -100,6 +100,74 @@ Le projet suit une architecture orientée objet avec les classes suivantes :
 
 ### Diagramme de classes
 
+### Diagramme de classes
+
+``` mermaid
+classDiagram
+    class Game {
+        +start()
+        +run()
+        +end()
+    }
+    
+    class Room {
+        -name: str
+        -description: str
+        -exits: dict
+        +get_description()
+        +get_exits()
+    }
+    
+    class Player {
+        -name: str
+        -inventory: list
+        -current_room: Room
+        +take_item(item)
+        +drop_item(item)
+        +move(direction)
+    }
+    
+    class Command {
+        -action: str
+        -parameter: str
+        +parse()
+        +execute()
+    }
+    
+    class Action {
+        -type: str
+        +perform()
+    }
+    
+    class Item {
+        -name: str
+        -description: str
+    }
+    
+    class Character {
+        -name: str
+        -location: Room
+        +talk_to()
+        +give_quest()
+    }
+    
+    class Quest {
+        -title: str
+        -description: str
+        -reward: int
+        +is_completed()
+    }
+    
+    Game --> Player
+    Game --> Room
+    Player --> Room
+    Player --> Item
+    Room --> Character
+    Character --> Quest
+    Command --> Action
+```
+
+## Perspectives d'améliorations
 ## Perspectives d'améliorations
 
 
@@ -107,10 +175,4 @@ Le projet suit une architecture orientée objet avec les classes suivantes :
 
 ## Structuration
 
-Il y a pour le moment 5 modules contenant chacun une classe.
 
-- `game.py` / `Game` : description de l'environnement, interface avec le joueur ;
-- `room.py` / `Room` : propriétés génériques d'un lieu  ;
-- `player.py` / `Player` : le joueur ;
-- `command.py` / `Command` : les consignes données par le joueur ;
-- `actions.py` / `Action` : les interactions entre .
