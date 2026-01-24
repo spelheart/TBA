@@ -8,12 +8,14 @@
 
 ---
 
-## Synopsis et Univers
+## Conception et univers du jeu
+
+### Synopsis et univers
 
 Vous incarnez un lycéen évoluant dans un établissment tout à fait normal (en apparence du moins).
 Votre objectif ultime est de **séduire Victoria**, une élève du lycée. Pour gagner son coeur, vous devez accomplir diverses quêtes afin de récolter assez d'argent pour lui offrir un cadeau.
 
-### Les quêtes principales
+#### Les quêtes principales
 
 Pour progresser, vous devez intéragir avec l'environnement et les personnages pour :
 
@@ -23,7 +25,7 @@ Pour progresser, vous devez intéragir avec l'environnement et les personnages p
 
 ---
 
-## Personnages
+### Personnages
 
 Le jeu est peuplé de différents personnages avec lesquels vous devez intéragir :
 
@@ -35,7 +37,7 @@ Le jeu est peuplé de différents personnages avec lesquels vous devez intéragi
 
 ---
 
-## Environnement du jeu
+### Environnement du jeu
 
 Le lycée est composé de nombreux lieux explorables indispensables à l'intrigue (et d'autres un peu moins) : 
 
@@ -43,7 +45,31 @@ Le lycée est composé de nombreux lieux explorables indispensables à l'intrigu
 - **Zones de cours :** Salles de cours (1 et 2), salle de musique, salle d'art, gymnase
 - **Zones spéciales :** Couloirs (en trois parties), salle des profs, pièce secrète, magasin de Max
 
-## Commandes et Gameplay 
+### Conditions de victoire/défaite
+
+#### Victoire
+
+#### Défaite 
+
+### Comment jouer ?
+
+#### Installation
+
+```bash
+git clone https://github.com/spelheart/TBA.git
+cd air_esiee_tba
+```
+
+#### Lancer le Jeu
+
+**Mode terminal :**
+```bash
+python game.py
+```
+
+## Architecture technique et programmation
+
+### Commandes et Gameplay 
 
 Le jeu se contrôle via une série de commandes textuelles simples : 
 
@@ -59,12 +85,24 @@ Le jeu se contrôle via une série de commandes textuelles simples :
 | `help` | — | Liste complète des commandes |
 | `quit` | — | Quitter le jeu |
 
+### Structuration
 
-Vous êtes dans un lycée on ne peut plus normal (enfin la plupart du temps mais ça vous le verrez bien). 
+Le projet suit une architecture orientée objet avec les classes suivantes :
 
-Afin de gagner, vous devez 
+- `game.py` / `Game` : description de l'environnement, interface avec le joueur ;
+- `room.py` / `Room` : propriétés génériques d'un lieu  ;
+- `player.py` / `Player` : le joueur ;
+- `command.py` / `Command` : les consignes données par le joueur ;
+- `actions.py` / `Action` : les interactions entre .
+- `item.py` / `Item` : .
+- `character.py` / `Character` : .
+- `quest.py` / `Quest` : .
 
-Les lieux sont au nombre de 6. Il n'y a pas encore d’objets ni de personnages autres que le joueur et très peu d’interactions. Cette première version sert de base à ce qui va suivre, et sera améliorée au fur et à mesure.
+### Diagramme de classes
+
+## Perspectives d'améliorations
+
+
 
 
 ## Structuration
