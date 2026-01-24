@@ -521,8 +521,8 @@ class Game:
             0.5,
         )
         bague = Item(
-            "bague en or blanc avec une pierre bleue",
-            "une bague en or blanc sertie d'une pierre bleue étincelante",
+            "bague en or blanc sertie d'une pierre bleue",
+            "une magnifique bague ancienne en or blanc, ornée d'un saphir bleu étincelant",
             0.1
         )
 

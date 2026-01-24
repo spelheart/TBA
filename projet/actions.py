@@ -166,7 +166,8 @@ class Actions:
             player.tunnel_talked_this_visit = False
         
         # GYMNASE SECURITY: Check if leaving gym without talking to Tunnel (only after talking to Maxou)
-        if old_room.name == "Gymnase" and player.current_room.name != "Gymnase" and player.current_room.name != "Réserve de Maxou":
+        # Exception: Going to Réserve Victoria doesn't trigger the ballon trap
+        if old_room.name == "Gymnase" and player.current_room.name != "Gymnase" and player.current_room.name != "Réserve Victoria":
             # Only game over if they talked to Maxou and haven't talked to Tunnel on the way back
             if player.talked_to_max and not player.tunnel_talked_this_visit:
                 print(
@@ -533,15 +534,16 @@ class Actions:
 
     def take(game, list_of_words, number_of_parameters):
         """Permet au joueur de ramasser un item dans la pièce courante.
-        Usage: `take <item_name>`
+        Usage: `take <item_name>` (accepte plusieurs mots)
         """
         l = len(list_of_words)
-        if l != number_of_parameters + 1:
+        if l < 2:
             command_word = list_of_words[0]
             print(MSG1.format(command_word=command_word))
             return False
 
-        item_name = list_of_words[1]
+        # Join all words after 'take' to form the item name
+        item_name = " ".join(list_of_words[1:])
         player = game.player
         room = player.current_room
 
@@ -1817,16 +1819,18 @@ class Actions:
 
     def give(game, list_of_words, number_of_parameters):
         """Offrir un objet à un personnage.
-        Usage: `give <item> <character>`
+        Usage: `give <item> <character>` (item peut contenir plusieurs mots)
+        Le dernier mot est le nom du personnage, tout ce qui précède est le nom de l'item.
         """
         l = len(list_of_words)
-        if l != number_of_parameters + 1:
+        if l < 3:
             command_word = list_of_words[0]
-            print(f"\nLa commande '{command_word}' prend 2 paramètres: <item> <character>.\n")
+            print(f"\nLa commande '{command_word}' prend au moins 2 paramètres: <item> <character>.\n")
             return False
 
-        item_name = list_of_words[1]
-        character_name = list_of_words[2]
+        # Last word is character name, everything before is item name
+        character_name = list_of_words[-1]
+        item_name = " ".join(list_of_words[1:-1])
         player = game.player
         room = player.current_room
 
@@ -1856,7 +1860,7 @@ class Actions:
                 return False
 
             # Check if it's the RIGHT gift (bague en or blanc avec pierre bleue)
-            if item_name == "bague":
+            if item_name == "bague en or blanc sertie d'une pierre bleue":
                 # SUCCESS! The player found the right gift
                 item = player.inventory.pop(item_name)
                 
