@@ -100,6 +100,12 @@ Le jeu se contrôle via une série de commandes textuelles simples :
 | `eat` | `<objet>` | Manger |
 | `up` | — | Se déplacer vers le haut |
 | `down` | — | Se déplacer vers le bas |
+| `open` | — | Ouvrir (un coffre fort par hasard) |
+| `play` | — | Jouer d'un instrument |
+| `give` | — | Offrir un objet à un personnage |
+| `read` | — | Lire |
+| `quests` | — | Afficher la liste des quêtes |
+| `quest` | `<name>` | Afficher les détails d'une quête |
 
 #### Exemples
 
