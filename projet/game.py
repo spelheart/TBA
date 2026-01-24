@@ -17,11 +17,53 @@ def piano_effect(game):
     """Fonction appelée quand le joueur joue du piano.
     Descend l'escalier secret de la salle de musique.
     """
-    print("\n🎹 Vous jouez une magnifique mélodie au piano...\n")
-    print("Soudain, un grondement résonne dans la salle !")
-    print("L'escalier secret commence à descendre du plafond avec un bruit sourd...\n")
-    print("✨ Un escalier en colimaçon apparaît maintenant dans la salle !\n")
-    print("Vous pouvez maintenant utiliser 'up' et 'down' pour accéder à la salle secrète.\n")
+    import time
+    
+    print("\n🎹 Vous posez vos doigts sur les touches du piano...\n")
+    time.sleep(0.5)
+    print("♪ ♫ ♪ ♫ ♪ ♫")
+    print("Une magnifique mélodie s'élève dans la salle...")
+    print("♪ ♫ ♪ ♫ ♪ ♫\n")
+    time.sleep(0.8)
+    
+    print("═" * 60)
+    print("⚠️  ATTENTION ! ⚠️")
+    print("═" * 60)
+    time.sleep(0.5)
+    
+    print("\n*GROOOOOOOONDEMENT*\n")
+    time.sleep(0.5)
+    print("Le sol tremble sous vos pieds !\n")
+    time.sleep(0.5)
+    
+    print("    🔽 🔽 🔽")
+    time.sleep(0.3)
+    print("      🔽 🔽")
+    time.sleep(0.3)
+    print("        🔽\n")
+    time.sleep(0.5)
+    
+    print("*CRAC* *CRAC* *CRAC*\n")
+    time.sleep(0.5)
+    
+    print("╔═══════════════════════════════════════╗")
+    print("║  Un escalier secret descend          ║")
+    print("║  lentement du plafond...             ║")
+    print("╚═══════════════════════════════════════╝\n")
+    time.sleep(0.8)
+    
+    print("     ╔════╗")
+    print("     ║    ║")
+    print("   ╔═╩════╩═╗")
+    print("   ║        ║")
+    print(" ╔═╩════════╩═╗")
+    print(" ║            ║")
+    print("═╩════════════╩═\n")
+    
+    print("✨" * 30)
+    print("\n🎊 L'ESCALIER SECRET EST MAINTENANT ACCESSIBLE ! 🎊\n")
+    print("✨" * 30)
+    print("\nVous pouvez utiliser 'up' pour monter vers la salle secrète.\n")
 
     # Connecter l'escalier secret
     for room in game.rooms:
@@ -36,19 +78,69 @@ def maxou_secret_room_effect(game):
     """Fonction appelée quand le joueur complète la quête Maxou.
     Maxou appuie sur un levier et la porte secrète s'ouvre dans les tribunes du gym.
     """
-    print("\n🎯 Maxou appuie sur un levier à ses pieds...\n")
-    print("*CRAC* *GRINCEMENT*\n")
-    print("Une porte secrète se dessine lentement dans les bancs des tribunes !")
-    print("La paroi s'éclaire d'une lueur mystérieuse...\n")
-    print("✨ Tu peux maintenant accéder à la réserve secrète de Maxou !\n")
+    import time
+    
+    print("\n" + "═" * 60)
+    print("🎯 Maxou sourit mystérieusement...")
+    print("═" * 60 + "\n")
+    time.sleep(0.5)
+    
+    print("Maxou: 'Regarde bien ce qui va se passer...'\n")
+    time.sleep(0.5)
+    
+    print("Il pose son pied sur une dalle particulière...\n")
+    time.sleep(0.5)
+    
+    print("*CLIC*\n")
+    time.sleep(0.3)
+    
+    print("⚡" * 30)
+    time.sleep(0.5)
+    
+    print("\n*CRAAAAAAAC* *GRINCEMENT MÉTALLIQUE*\n")
+    time.sleep(0.5)
+    
+    print("      ╔═════════════╗")
+    print("      ║   ⚠️  ⚠️   ║")
+    time.sleep(0.3)
+    print("    ╔═╩═════════════╩═╗")
+    print("    ║   Le sol se     ║")
+    print("    ║   sépare en     ║")
+    print("    ║   deux...       ║")
+    print("    ╚═════════════════╝\n")
+    time.sleep(0.8)
+    
+    print("         ⬇️  ⬇️  ⬇️")
+    time.sleep(0.3)
+    print("           ⬇️  ⬇️")
+    time.sleep(0.3)
+    print("             ⬇️\n")
+    time.sleep(0.5)
+    
+    print("╔════════════════════════════════════════════╗")
+    print("║                                            ║")
+    print("║   Un escalier luxueux descend             ║")
+    print("║   dans les profondeurs du gymnase...      ║")
+    print("║                                            ║")
+    print("║   💎 Des lumières dorées illuminent       ║")
+    print("║      les marches de marbre blanc          ║")
+    print("║                                            ║")
+    print("╚════════════════════════════════════════════╝\n")
+    time.sleep(0.8)
+    
+    print("✨" * 30)
+    print("\n🏆 LA RÉSERVE SECRÈTE DE MAXOU EST OUVERTE ! 🏆\n")
+    print("✨" * 30)
+    print("\nMaxou: 'Bienvenue dans ma collection personnelle !'")
+    print("Tu peux maintenant aller vers le sud pour explorer la réserve.\n")
 
-    # Connecter le gymnase à la salle de Victoria
+    # Connecter le gymnase à la salle de Victoria (vers le sud)
     for room in game.rooms:
         if room.name == "Gymnase":
             for other_room in game.rooms:
                 if other_room.name == "Réserve Victoria":
-                    room.exits["E"] = other_room
-                    other_room.exits["O"] = room
+                    room.exits["S"] = other_room
+                    other_room.exits["N"] = room
 
 
 class Game:
@@ -173,6 +265,14 @@ class Game:
             "Aide en cas d'urgence de blocage",
         )
         self.commands["help_help"] = help_help_cmd
+        give_cmd = Command(
+            "give",
+            " <item> <character> : offrir un objet à un personnage",
+            Actions.give,
+            2,
+            "Interaction",
+        )
+        self.commands["give"] = give_cmd
 
         # Setup rooms
         hall_entree = Room(
@@ -211,14 +311,14 @@ class Game:
             "guitare et une batterie mais bon... on s'en fout un peu non ?",
         )
         self.rooms.append(musique)
-        art = Room(
-            "Salle d'art plastique",
-            "la salle d'art plastique. Il y a des sculptures fait avec les viex chewing gum "
-            "trouvés sous les tables, des peintures dignes d'enfants de 3 ans, tu sais "
-            "ceux que tu donnais à ta prof en maternelle et que tu retrouvais dans la "
-            "poubelle le lendemain et une tête de biche empaillée.",
-        )
-        self.rooms.append(art)
+        # art = Room(
+        #     "Salle d'art plastique",
+        #     "la salle d'art plastique. Il y a des sculptures fait avec les viex chewing gum "
+        #     "trouvés sous les tables, des peintures dignes d'enfants de 3 ans, tu sais "
+        #     "ceux que tu donnais à ta prof en maternelle et que tu retrouvais dans la "
+        #     "poubelle le lendemain et une tête de biche empaillée.",
+        # )
+        # self.rooms.append(art)
         couloir2 = Room(
             "Suite du couloir",
             "la deuxième partie du couloir , celle ci mène à la salle d'art plastique, au "
@@ -275,7 +375,9 @@ class Game:
 
         salle_victoria = Room(
             "Réserve Victoria",
-            "une salle isolée et mystérieuse réservée au stockage des objets de Victoria.",
+            "une salle secrète éblouissante remplie d'objets de luxe ! Des vitrines illuminées "
+            "exposent colliers de diamants, sacs de créateurs, montres en or... C'est un véritable "
+            "trésor de marques prestigieuses. L'odeur du parfum de luxe flotte dans l'air. ",
         )
         self.rooms.append(salle_victoria)
 
@@ -296,7 +398,7 @@ class Game:
             "O": hall_entree,
         }
         couloir2.exits = {"N": salle1, "E": couloir3, "S": salle_profs, "O": couloir1}
-        couloir3.exits = {"N": art, "E": escalier, "S": salle2, "O": couloir2}
+        couloir3.exits = {"N": musique, "E": escalier, "S": salle2, "O": couloir2}
         salle_profs.exits = {"N": couloir2, "E": None, "S": None, "O": None}
         entree.exits = {"N": None, "E": hall_entree, "S": None, "O": None}
         escalier.exits = {
@@ -316,14 +418,14 @@ class Game:
             "D": escalier,
         }
         couloir_sport.exits = {"N": couloir1, "E": None, "S": gym, "O": None}
-        gym.exits = {"N": couloir_sport, "E": None, "S": None, "O": None}
-        art.exits = {"N": None, "E": None, "S": couloir3, "O": None}
+        gym.exits = {"N": couloir_sport, "E": None, "S": None, "O": None}  # S sera connecté après la quête
+        # art.exits = {"N": None, "E": None, "S": couloir3, "O": None}
         musique.exits = {
-            "N": couloir3,
+            "N": None,
             "E": None,
-            "S": None,
+            "S": couloir3,
             "O": None,
-            "U": None,
+            "U": None,  # L'escalier secret n'est pas encore disponible
             "D": None,
         }
         cafet.exits = {"N": None, "E": None, "S": couloir1, "O": None}
@@ -335,7 +437,7 @@ class Game:
             "U": None,
             "D": musique,
         }
-        salle_victoria.exits = {"N": None, "E": None, "S": None, "O": None}
+        salle_victoria.exits = {"N": None, "E": None, "S": None, "O": None}  # N sera connecté après la quête
         coffre_fort = Item(
             "coffre fort",
             "un coffre-fort métallique verrouillé, idéal pour y ranger ses affaires",
@@ -350,7 +452,6 @@ class Game:
             "piles de copies d'examen", "une copie d'examen avec une note de 0/20", 1
         )
         salle_profs.inventory[coffre_fort.name] = coffre_fort
-        musique.inventory[journal.name] = journal
         # Les copies d'examen sont dans le coffre fort (à ouvrir) - ne pas les ajouter au démarrage
 
         # objet de la réserve de Victoria
@@ -427,8 +528,8 @@ class Game:
         musique.inventory[batterie.name] = batterie
 
         # Add items to the secret room
-        canet = Item("canet", "un petit canet rouillé, probablement très ancien", 0.1)
-        salle_secrete.inventory[canet.name] = canet
+        carnet = Item("carnet", "un magnifique carnet en cuir luxueux orné de broderies dorées délicates, avec des pages dorées sur tranche et un fermoir en or. Le journal intime de Victoria.", 0.2)
+        salle_secrete.inventory[carnet.name] = carnet
 
         # Cadeau pour Victoria (récompense Maxou)
         cadeau_victoria = Item(
@@ -459,7 +560,7 @@ class Game:
                 "Salut, je m'appelle Joseph. Bienvenue en enfer...",
                 "Je ne suis pas très bavard aujourd'hui.",
             ],
-            patrol_rooms=[hall_entree, couloir1, couloir2, couloir3, entree, escalier, toit, musique, art, salle1, salle2, salle_profs, couloir_sport, gym],
+            patrol_rooms=[hall_entree, couloir1, couloir2, couloir3, entree, escalier, toit, musique, salle1, salle2, salle_profs, couloir_sport, gym],
             escape_phrases=joseph_escape_phrases,
         )
         
@@ -471,7 +572,7 @@ class Game:
                 "Je suis Jolyne, et je suis venue pour te tuer.",
                 "Yare Yare Daze...",
             ],
-            patrol_rooms=[hall_entree, couloir1, couloir2, couloir3, entree, escalier, toit, musique, art, salle1, salle2, salle_profs, couloir_sport, gym],
+            patrol_rooms=[hall_entree, couloir1, couloir2, couloir3, entree, escalier, toit, musique, salle1, salle2, salle_profs, couloir_sport, gym],
             escape_phrases=jolyne_escape_phrases,
         )
         victoria = Character(
@@ -488,7 +589,12 @@ class Game:
             "Sophie",
             "la meilleure amie de Victoria (en vrai elle l'aime pas)",
             couloir2,
-            ["Salut.", "Je ne."],
+            [
+                "Sophie ? C'est MADEMOISELLE Sophie pour toi.",
+                "Je suis LA meilleure amie de Victoria. LA seule qui compte vraiment.",
+                "Alors si tu veux approcher Victoria, tu dois d'abord ME convaincre.",
+                "Pour l'instant, tu ne m'impressionnes pas du tout.",
+            ],
             immobile=True,
         )
         maxou = Character(
@@ -620,6 +726,17 @@ class Game:
         self.player.quest_manager.add_quest(quete_exam)
         # Quest will be activated when talking to Patoche or JP (after talking to Maxou)
 
+        # Quête finale : Offrir le bon cadeau à Victoria
+        quete_victoria_finale = Quest(
+            title="Le Cadeau Parfait",
+            description="Tu as accès à la réserve de Maxou remplie d'objets de luxe. "
+            "Mais lequel Victoria appréciera-t-elle vraiment ? Choisis avec soin et offre-le lui.",
+            objectives=["Choisir le bon objet dans la réserve", "Offrir l'objet à Victoria"],
+            reward="Le cœur de Victoria",
+        )
+        self.player.quest_manager.add_quest(quete_victoria_finale)
+        # Quest will be activated when Maxou opens his secret room
+
     def win(self):
         """Retourne True si toutes les quêtes sont complètes."""
         if not self.player.quest_manager:
@@ -672,8 +789,15 @@ class Game:
 
     def print_welcome(self):
         """Affiche le message de bienvenue et la description de départ."""
-        print(f"\nBienvenue {self.player.name} dans ce jeu d'aventure !")
-        print("Entrez 'help' si vous avez besoin d'aide.")
+        print(f"\n{'='*70}")
+        print(f"  Bienvenue {self.player.name} dans ce jeu d'aventure !")
+        print(f"{'='*70}")
+        print("\n💕 Victoria, la fille de vos rêves, est connue pour être extrêmement")
+        print("   matérialiste. Elle juge les gens uniquement sur leur apparence et leurs")
+        print("   possessions. Conquérir son cœur ne sera pas une tâche facile...")
+        print(f"\n{'─'*70}")
+        print("💡 Entrez 'help' si vous avez besoin d'aide.")
+        print(f"{'─'*70}\n")
         print(self.player.current_room.get_long_description())
 
 

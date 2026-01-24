@@ -336,7 +336,7 @@ class Actions:
             message = "attention à ne pas vous faire raquetter"
         # Si les deux quêtes sont terminées
         elif quete_exam and quete_exam.is_completed and quete_victoria and quete_victoria.is_completed:
-            message = "quelle douce mélodie qu'est celle de la proche victoire"
+            message = "la 'meilleure amie' de Victoria pourrait avoir des informations intéressantes à partager..."
         # Si aucune n'est activée
         else:
             message = "abuse, joue un peu avant de demander de l'aide"
@@ -572,6 +572,30 @@ class Actions:
         player.inventory[item_name] = item
         print(f"\nVous avez ramassé : {item}\n")
 
+        # Check if we're in Réserve Victoria and track items taken
+        if room.name == "Réserve Victoria":
+            # Initialize counter if it doesn't exist
+            if not hasattr(player, 'reserve_victoria_items_taken'):
+                player.reserve_victoria_items_taken = 0
+            
+            player.reserve_victoria_items_taken += 1
+            
+            # If player took more than 1 item, GAME OVER
+            if player.reserve_victoria_items_taken > 1:
+                print("\n" + "=" * 70)
+                print("  ⚠️ MAXOU SURGIT DANS LA SALLE ! ⚠️")
+                print("=" * 70)
+                print("\nMaxou: HÉHO ! Tu t'es cru chez toi à tout prendre ?!")
+                print("Maxou: Tu te prends pour qui exactement ?!")
+                print("Maxou: Je t'ai fait confiance et c'est comme ça que tu me remercies ?!")
+                print("Maxou: *Il vous arrache tous les objets des mains*")
+                print("\nMaxou: CASSE-TOI DE MA RÉSERVE ! ET NE REVIENS PLUS JAMAIS !")
+                print("Maxou: Je ne t'aiderai PLUS. C'est terminé entre nous !")
+                print("\n" + "=" * 70)
+                print("\n💀 Vous avez trahi la confiance de Maxou. Victoria ne sera jamais conquise.\n")
+                print("=" * 70 + "\n")
+                return "LOSE"
+
         # Check quest objectives for taking items
         if player.quest_manager:
             player.quest_manager.complete_objective(f"Récupérer {item_name}")
@@ -704,7 +728,7 @@ class Actions:
             if player.quest_manager:
                 quete_maxou = None
                 for quest in player.quest_manager.get_all_quests():
-                    if quest.title == "Séduire Victoria":
+                    if quest.title == "Le Prix du Chic":
                         quete_maxou = quest
                         break
 
@@ -740,6 +764,22 @@ class Actions:
 
                         # Mark that player has access to Maxou's secret room
                         player.maxou_room_unlocked = True
+
+                        # Activate the final quest
+                        quete_finale = None
+                        for quest in player.quest_manager.get_all_quests():
+                            if quest.title == "Le Cadeau Parfait":
+                                quete_finale = quest
+                                break
+                        
+                        if quete_finale and not quete_finale.is_active:
+                            quete_finale.activate()
+                            player.quest_manager.active_quests.append(quete_finale)
+
+                        # Maxou's instruction (WITHOUT warning about taking only one item)
+                        print("Maxou: Voilà, tu peux descendre au sud.")
+                        print("Maxou: Prends ce dont tu as besoin pour impressionner Victoria.")
+                        print("Maxou: Bonne chance mec.\n")
 
                         return True
 
@@ -781,7 +821,7 @@ class Actions:
             if player.quest_manager:
                 quete_exam = None
                 for quest in player.quest_manager.get_all_quests():
-                    if quest.title == "Les Sujets d'Examen":
+                    if quest.title == "Mission impossible":
                         quete_exam = quest
                         break
 
@@ -814,6 +854,31 @@ class Actions:
                             "😊 Tu as enfin assez d'argent pour payer le cadeau pour Vic.\n"
                         )
 
+            return True
+
+        # Special handling for Sophie - different dialogue based on quest status
+        if character_name == "Sophie":
+            quete_exam_completed = False
+            quete_victoria_completed = False
+            
+            if player.quest_manager:
+                for quest in player.quest_manager.get_all_quests():
+                    if quest.title == "Mission impossible" and quest.is_completed:
+                        quete_exam_completed = True
+                    if quest.title == "Le Prix du Chic" and quest.is_completed:
+                        quete_victoria_completed = True
+            
+            # Si les deux quêtes sont terminées, elle révèle le secret de Victoria
+            if quete_exam_completed and quete_victoria_completed:
+                print("\nSophie: Oh salut ! Tu t'intéresses à ma *chère* amie Victoria ?")
+                print("Entre nous... elle chante horriblement mal. Genre vraiment catastrophique !")
+                print("La pauvre, elle en a tellement honte qu'elle s'entraîne en secret dans la salle de musique...")
+                print("Mais bon, c'est ma meilleure amie, donc je la soutiens *évidemment*... *soupir*\n")
+            else:
+                # Sinon, elle joue la reine du monde
+                if hasattr(character, "get_msg"):
+                    print(f"\n{character.get_msg()}\n")
+            
             return True
 
         if hasattr(character, "get_msg"):
@@ -1605,3 +1670,219 @@ class Actions:
             print("Utilisez 'prev' pour la page précédente")
         if player.carnet_current_page < len(pages) - 1:
             print("Utilisez 'next' pour la page suivante")
+        print("=" * 60)
+
+        return True
+
+    def give(game, list_of_words, number_of_parameters):
+        """Offrir un objet à un personnage.
+        Usage: `give <item> <character>`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(f"\nLa commande '{command_word}' prend 2 paramètres: <item> <character>.\n")
+            return False
+
+        item_name = list_of_words[1]
+        character_name = list_of_words[2]
+        player = game.player
+        room = player.current_room
+
+        # Check if the player has the item
+        if item_name not in player.inventory:
+            print(f"\nVous n'avez pas '{item_name}' dans votre inventaire.\n")
+            return False
+
+        # Check if the character is in the room
+        if character_name not in room.inventory:
+            print(f"\nIl n'y a pas de personnage nommé '{character_name}' ici.\n")
+            return False
+
+        # Special handling for giving gifts to Victoria (final quest)
+        if character_name == "Victoria":
+            # Check if the final quest is active
+            quete_finale = None
+            if player.quest_manager:
+                for quest in player.quest_manager.get_all_quests():
+                    if quest.title == "Le Cadeau Parfait":
+                        quete_finale = quest
+                        break
+
+            if not quete_finale or not quete_finale.is_active:
+                print("\nVictoria: Je n'accepte pas de cadeau de n'importe qui.")
+                print("Reviens quand tu auras quelque chose de vraiment spécial.\n")
+                return False
+
+            # Check if it's the RIGHT gift (bague en or blanc avec pierre bleue)
+            if item_name == "bague":
+                # SUCCESS! The player found the right gift
+                item = player.inventory.pop(item_name)
+                
+                print("\n" + "=" * 70)
+                print("  ✨ MOMENT MAGIQUE ✨")
+                print("=" * 70)
+                print("\nVous tendez la bague en or blanc avec sa pierre bleue étincelante...")
+                print("\nVictoria: *Les yeux écarquillés* C'est... c'est impossible...")
+                print("Victoria: Cette bague... c'était celle de ma grand-mère !")
+                print("Victoria: Je l'avais perdue il y a des années... Comment as-tu su ?")
+                print("\nDes larmes coulent sur ses joues, brisant son masque de froideur.")
+                print("\nVictoria: Tous ces objets de luxe... ils ne signifient rien comparé à ça.")
+                print("Victoria: Tu as vraiment pris le temps de me comprendre...")
+                print("Victoria: Personne ne l'avait jamais fait avant...")
+                print("\n*Elle s'approche de vous et prend votre main*")
+                print("\nVictoria: Tu sais... j'ai rejeté tellement de garçons.")
+                print("Victoria: Parce qu'ils ne voyaient que mon apparence, mes vêtements, mon argent.")
+                print("Victoria: Mais toi... tu as cherché à connaître mon cœur.")
+                print("\n*Elle sourit, un vrai sourire, pas celui qu'elle montre d'habitude*")
+                print("\nVictoria: Est-ce que... est-ce que tu voudrais sortir avec moi ?")
+                print("Victoria: Vraiment sortir avec moi. Pas la Victoria matérialiste.")
+                print("Victoria: Mais la vraie Victoria. Celle que tu viens de découvrir.")
+                print("\n💝 Vous acceptez, bien sûr. Comment pourriez-vous refuser ?")
+                print("\nVictoria: *rougit légèrement* Merci. Du fond du cœur, merci.")
+                print("\n" + "=" * 70)
+                print("\n💖 Victoria est maintenant votre petite amie !")
+                print("\n Vous êtes officielement devenu son tenneur de sac à main attitré.")
+                print("Vous avez réussi l'impossible : conquérir son cœur.\n")
+                print("=" * 70 + "\n")
+
+                # Complete the final quest
+                if quete_finale and not quete_finale.is_completed:
+                    quete_finale.complete_objective("Choisir le bon objet dans la réserve", player)
+                    quete_finale.complete_objective("Offrir l'objet à Victoria", player)
+                    quete_finale.is_completed = True
+
+                return True
+
+            # WRONG gifts - Victoria rejects with specific responses
+            elif "collier" in item_name or "diamants" in item_name:
+                print("\n" + "=" * 70)
+                print("  💎 REFUS BRUTAL")
+                print("=" * 70)
+                print("\nVous tendez fièrement le collier de diamants...")
+                print("\nVictoria: *Éclate de rire* Un collier ? Vraiment ?")
+                print("Victoria: Tu crois que je vais m'impressionner avec des cailloux brillants ?")
+                print("Victoria: J'en ai TROIS exactement comme celui-là dans mon coffre !")
+                print("Victoria: C'est tellement... prévisible. Tellement basique.")
+                print("Victoria: Les diamants ? Pfff, tout le monde peut en acheter.")
+                print("Victoria: Je pensais que tu étais différent... Quelle déception.")
+                print("\n*Elle vous tourne le dos avec mépris*")
+                print("\nVictoria: Ne me reparle PLUS JAMAIS.")
+                print("\n💔 Victoria refuse le collier et s'en va définitivement.")
+                print("\n☠️ Vous avez perdu toute chance avec Victoria. GAME OVER.\n")
+                print("=" * 70 + "\n")
+                return "LOSE"
+
+            elif "chaussures" in item_name or "louboutin" in item_name:
+                print("\n" + "=" * 70)
+                print("  👠 REFUS MÉPRISANT")
+                print("=" * 70)
+                print("\nVous présentez les chaussures Louboutin rouges...")
+                print("\nVictoria: *Lève un sourcil* Des Louboutin ?")
+                print("Victoria: Sérieusement ? Tu as vu mes pieds ?")
+                print("Victoria: Ce sont des 36, et je fais du 37 et demi !")
+                print("Victoria: Tu ne connais même pas ma pointure ? C'est pathétique.")
+                print("Victoria: Et puis, le rouge ? Je déteste le rouge sur moi.")
+                print("Victoria: Ça fait vulgaire. Ça manque de classe.")
+                print("Victoria: Tu n'as AUCUNE idée de qui je suis vraiment.")
+                print("\n*Elle repousse les chaussures avec dédain*")
+                print("\nVictoria: On en reste là. Je ne veux plus te voir.")
+                print("\n💔 Victoria est visiblement déçue et rompt tout contact.")
+                print("\n☠️ Vous avez perdu toute chance avec Victoria. GAME OVER.\n")
+                print("=" * 70 + "\n")
+                return "LOSE"
+
+            elif "sac" in item_name or "birkin" in item_name or "hermès" in item_name or "hermes" in item_name:
+                print("\n" + "=" * 70)
+                print("  👜 REFUS CINGLANT")
+                print("=" * 70)
+                print("\nVous offrez le sac Hermès Birkin avec espoir...")
+                print("\nVictoria: Un Birkin ? Oh mon Dieu...")
+                print("Victoria: Tu sais combien de filles rêvent d'avoir ce sac ?")
+                print("Victoria: Toutes les filles superficielles et sans personnalité.")
+                print("Victoria: Tu me prends pour qui ? Une influenceuse Instagram ?")
+                print("Victoria: Ce sac, c'est le symbole parfait de la vacuité matérielle.")
+                print("Victoria: Je pensais que tu avais compris que je cherchais quelque chose de... vrai.")
+                print("Victoria: Mais non, tu es comme tous les autres. Superficiel.")
+                print("\n*Elle croise les bras, glaciale*")
+                print("\nVictoria: C'est terminé. Ne t'approche plus de moi.")
+                print("\n💔 Victoria te regarde une dernière fois avec dégoût.")
+                print("\n☠️ Vous avez perdu toute chance avec Victoria. GAME OVER.\n")
+                print("=" * 70 + "\n")
+                return "LOSE"
+
+            elif "montre" in item_name or "rolex" in item_name:
+                print("\n" + "=" * 70)
+                print("  ⌚ REFUS CASSANT")
+                print("=" * 70)
+                print("\nVous tendez la montre Rolex en or...")
+                print("\nVictoria: Une Rolex ? C'est une blague ?")
+                print("Victoria: Mon père m'en a déjà offert DEUX pour mon anniversaire.")
+                print("Victoria: Et celle-là est un modèle masculin ! Tu es aveugle ou quoi ?")
+                print("Victoria: Elle est bien trop lourde pour mon poignet.")
+                print("Victoria: Une Rolex, c'est le cadeau type du mec qui n'a aucune imagination.")
+                print("Victoria: 'Oh, c'est cher, donc elle va forcément aimer' *imite une voix stupide*")
+                print("Victoria: Pathétique. Vraiment pathétique.")
+                print("\n*Elle rejette la montre d'un geste brusque*")
+                print("\nVictoria: Va-t'en. Maintenant. Je ne veux plus te voir.")
+                print("\n💔 Victoria semble blessée et vous chasse définitivement.")
+                print("\n☠️ Vous avez perdu toute chance avec Victoria. GAME OVER.\n")
+                print("=" * 70 + "\n")
+                return "LOSE"
+
+            elif "foulard" in item_name:
+                print("\n" + "=" * 70)
+                print("  🧣 REFUS HAUTAIN")
+                print("=" * 70)
+                print("\nVous offrez délicatement le foulard Hermès en soie...")
+                print("\nVictoria: Un foulard ? Sérieux ?")
+                print("Victoria: C'est le genre de cadeau qu'on offre à sa grand-mère !")
+                print("Victoria: J'ai 17 ans, pas 70 ! Tu me prends pour qui ?")
+                print("Victoria: Et puis, je suis allergique à la soie. Tu ne le savais pas ?")
+                print("Victoria: Ah mais oui, bien sûr que tu ne le savais pas.")
+                print("Victoria: Parce que tu ne m'as JAMAIS vraiment écoutée.")
+                print("Victoria: Tu n'as fait que regarder mon apparence extérieure.")
+                print("\n*Elle détourne le regard, blessée*")
+                print("\nVictoria: Laisse-moi tranquille. Pour toujours.")
+                print("\n💔 Victoria semble profondément blessée et vous rejette.")
+                print("\n☠️ Vous avez perdu toute chance avec Victoria. GAME OVER.\n")
+                print("=" * 70 + "\n")
+                return "LOSE"
+
+            elif "parfum" in item_name or "chanel" in item_name:
+                print("\n" + "=" * 70)
+                print("  🌸 REFUS AMER")
+                print("=" * 70)
+                print("\nVous présentez le flacon de Chanel No. 5...")
+                print("\nVictoria: Du Chanel No. 5 ? *Soupir profond*")
+                print("Victoria: C'est le parfum que ma mère portait...")
+                print("Victoria: Avant qu'elle ne parte et m'abandonne.")
+                print("Victoria: Tu crois vraiment que j'ai envie de sentir comme elle ?")
+                print("Victoria: De me rappeler chaque jour qu'elle n'est plus là ?")
+                print("Victoria: Ce parfum, c'est... c'est de la douleur en bouteille.")
+                print("Victoria: Comment tu peux être aussi... aussi insensible ?")
+                print("Victoria: Tu ne me connais pas du tout. Pas du tout.")
+                print("\n*Des larmes de colère brillent dans ses yeux*")
+                print("\nVictoria: *sanglote* Dégage ! DÉGAGE DE MA VIE !")
+                print("\n💔 Victoria est effondrée. Vous l'avez profondément blessée.")
+                print("\n☠️ Vous avez perdu toute chance avec Victoria. GAME OVER.\n")
+                print("=" * 70 + "\n")
+                return "LOSE"
+
+            else:
+                # WRONG gift - Victoria rejects it
+                print("\n" + "-" * 70)
+                print(f"\nVictoria regarde '{item_name}' avec confusion et déception...")
+                print("\nVictoria: C'est quoi ça exactement ?")
+                print("Victoria: Tu te moques de moi ? C'est ça ?")
+                print("Victoria: Je pensais que tu étais sérieux, mais visiblement...")
+                print("Victoria: C'est fini. Ne m'adresse plus jamais la parole.")
+                print("\nVictoria refuse le cadeau et s'en va pour toujours.")
+                print("\n💔 Peut-être aurais-tu dû mieux la connaître avant de choisir...")
+                print("\n☠️ Vous avez perdu toute chance avec Victoria. GAME OVER.\n")
+                print("-" * 70 + "\n")
+                return "LOSE"
+
+        else:
+            print(f"\n{character_name} n'accepte pas les cadeaux.\n")
+            return False

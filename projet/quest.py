@@ -28,8 +28,13 @@ class Quest:
     def activate(self):
         """Activate the quest."""
         self.is_active = True
-        print(f"\n🗡️  Nouvelle quête activée: {self.title}")
-        print(f"📝 {self.description}\n")
+        print(f"\n{'='*70}")
+        print(f"  ⚔️  NOUVELLE QUÊTE ACTIVÉE !")
+        print(f"{'='*70}")
+        print(f"\n📜 {self.title}")
+        print(f"{'─'*70}")
+        print(f"📝 {self.description}")
+        print(f"{'─'*70}\n")
 
     def complete_objective(self, objective, player=None):
         """Mark an objective as completed."""
@@ -48,8 +53,12 @@ class Quest:
         """Mark the quest as completed and give reward to player."""
         if not self.is_completed:
             self.is_completed = True
-            print(f"\n🏆 Quête terminée: {self.title}")
+            print(f"\n{'='*70}")
+            print(f"  🏆 QUÊTE TERMINÉE !")
+            print(f"{'='*70}")
+            print(f"\n📜 {self.title}")
             if self.reward:
+                print(f"{'─'*70}")
                 print(f"🎁 Récompense: {self.reward}")
                 if player:
                     reward_success = player.add_reward(self.reward)
@@ -60,7 +69,7 @@ class Quest:
                         if self.completed_objectives:
                             self.completed_objectives.pop()
                         return
-            print()
+            print(f"{'='*70}\n")
 
     def get_status(self):
         """Get the current status of the quest."""
