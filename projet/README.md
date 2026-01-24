@@ -89,9 +89,16 @@ Le jeu se contrôle via une série de commandes textuelles simples :
 | `help` | — | Liste complète des commandes |
 | `quit` | — | Quitter le jeu |
 | `help_help` | — | Aider le protagoniste |
-| `buy` | — | Acheter |
+| `buy` | `<objet>` | Acheter |
+| `eat` | `<objet>` | Manger |
 | `up` | — | Se déplacer vers le haut |
 | `down` | — | Se déplacer vers le bas |
+
+#### Exemples
+
+```bash
+python game.py
+```
 
 ### Structuration
 
