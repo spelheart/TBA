@@ -225,15 +225,17 @@ classDiagram
     }
     
     Game *-- Player
-    Game *-- QuestManager
-    QuestManager *-- Quest
-    Instrument `-- Item
-    Room °-- Item
+    Game *-- Room
+    Game *-- Actions
+    Game *-- Command
     Room °-- Character
-    Player --> Room
-    Character --> Room
-    Room --> Room
-    Command ..> Actions
+    Room °-- Item
+    Player °-- Room
+    Player °-- Item
+    Game *-- Quest
+    Game *-- QuestManager
+    Instrument `-- Item
+    
 
 ```
 
