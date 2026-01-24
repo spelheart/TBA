@@ -8,9 +8,19 @@
 
 ---
 
-## Conception et univers du jeu
+**Lien de la vidéo de présentation :**
 
-### Synopsis et univers
+---
+
+## 📚 Table des matières
+
+1. [Le guide Utilisateur](#guide-utilisateur)
+2. [Le guide Développeur](#guide-développeur)
+3. [Les perspectives de développement](#perspectives-de-développement)
+
+## Le guide utilisateur
+
+### 🧩 Synopsis et univers
 
 Vous incarnez un lycéen évoluant dans un établissment tout à fait normal (en apparence du moins).
 Votre objectif ultime est de **séduire Victoria**, une élève du lycée. Pour gagner son coeur, vous devez accomplir diverses quêtes afin de récolter assez d'argent pour lui offrir un cadeau.
@@ -23,9 +33,7 @@ Pour progresser, vous devez intéragir avec l'environnement et les personnages p
 - Mener l'enquête pour trouver le journal intime de Victoria
 - Prendre des risques en volant les copies d'examen
 
----
-
-### Personnages
+### 🧑 Personnages
 
 Le jeu est peuplé de différents personnages avec lesquels vous devez intéragir :
 
@@ -37,9 +45,8 @@ Le jeu est peuplé de différents personnages avec lesquels vous devez intéragi
 - **Proviseur :** Le proviseur du lycée 
 - **professeur Koro :** Un professeur de l'école
 - **Tunnel :** Un boug qui aide le protagoniste à passer de l'autre coté du terrain pour pas se prendre une balle
----
 
-### Environnement du jeu
+### 🧩 Environnement du jeu
 
 Le lycée est composé de nombreux lieux explorables indispensables à l'intrigue (et d'autres un peu moins) : 
 
@@ -47,7 +54,7 @@ Le lycée est composé de nombreux lieux explorables indispensables à l'intrigu
 - **Zones de cours :** Salles de cours (1 et 2), salle de musique, gymnase
 - **Zones spéciales :** Couloirs (en trois parties), salle des profs, pièce secrète, magasin de Maxou, comptoir de la caféteria 
 
-### Conditions de victoire/défaite
+### 🎲 Conditions de victoire/défaite
 
 #### Victoire
 
@@ -62,7 +69,7 @@ Le lycée est composé de nombreux lieux explorables indispensables à l'intrigu
 - Manger le sandwich
 - Prendre plus d'un objet dans la salle de Max
 
-### Comment jouer ?
+### 💻 Comment jouer ?
 
 #### Installation
 
@@ -77,8 +84,9 @@ cd TBA
 ```bash
 python game.py
 ```
+---
 
-## Architecture technique et programmation
+## Le guide développeur
 
 ### Commandes et Gameplay 
 
@@ -110,7 +118,7 @@ Le jeu se contrôle via une série de commandes textuelles simples :
 #### Exemples
 
 ```bash
-> go E 
+> go E -
 
 Voici les pièces que vous avez visitées :
 - Entrée de l'école
@@ -284,7 +292,9 @@ classDiagram
 
 ```
 
-## Perspectives d'améliorations
+---
+
+## Les perspectives de développement
 
 ### 🌍 Accessibilité et Localisation
 
