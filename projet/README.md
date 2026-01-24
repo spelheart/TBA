@@ -31,9 +31,9 @@ Le jeu est peuplé de différents personnages avec lesquels vous devez intéragi
 
 - **Victoria :** l'intêret romantique du protagoniste
 - **Sophie :** La meilleure amie de Victoria (qui ne l'apprécie pas tant que ça en réalité)
-- **Max :** Un mec louche de l"école qui donne les missions au protagoniste
+- **Max :** Un mec louche de l'école qui donne les missions au protagoniste
 - **Lucas :** Le meilleur ami du protagoniste, une source précieuse d'informations
-- **JP et l'autre :** Des personnages secondaires qui donnent du travail au protagoniste
+- **JP et Patoche :** Des personnages secondaires qui donnent du travail au protagoniste
 
 ---
 
@@ -57,7 +57,7 @@ Le lycée est composé de nombreux lieux explorables indispensables à l'intrigu
 
 ```bash
 git clone https://github.com/spelheart/TBA.git
-cd air_esiee_tba
+cd TBA
 ```
 
 #### Lancer le Jeu
@@ -89,90 +89,156 @@ Le jeu se contrôle via une série de commandes textuelles simples :
 
 Le projet suit une architecture orientée objet avec les classes suivantes :
 
-- `game.py` / `Game` : description de l'environnement, interface avec le joueur ;
-- `room.py` / `Room` : propriétés génériques d'un lieu  ;
-- `player.py` / `Player` : le joueur ;
-- `command.py` / `Command` : les consignes données par le joueur ;
-- `actions.py` / `Action` : les interactions entre .
-- `item.py` / `Item` : .
-- `character.py` / `Character` : .
-- `quest.py` / `Quest` : .
-
-### Diagramme de classes
+- `game.py` / `Game` : Description de l'environnement, interface avec le joueur ;
+- `room.py` / `Room` : Structure des lieux et des sorties ;
+- `player.py` / `Player` : Caractéristiques et inventaire joueur ;
+- `command.py` / `Command` : Consignes données par le joueur ;
+- `actions.py` / `Action` : Exécution logique des commandes ;
+- `item.py` / `Item`, `Instrument` : Objets et instruments de musique ;
+- `character.py` / `Character` : Comportements et déplacement des PNJ ;
+- `quest.py` / `Quest`, `QuestManager` : Système complet de missions narratives ;
 
 ### Diagramme de classes
 
 ``` mermaid
+
 classDiagram
+
     class Game {
-        +start()
-        +run()
-        +end()
+        - finished : bool
+        - rooms : list
+        - commands : dict
+        - player : Player
+        - actions : Actions
+        - characters : list
+        + __init__(self) -> None
+        + setup(self) -> None
+        + play(self) -> None
+        + win(self) -> bool
+        + loose(self) -> bool
+        + print_welcome(self) -> None
     }
     
     class Room {
-        -name: str
-        -description: str
-        -exits: dict
-        +get_description()
-        +get_exits()
+        - name : str
+        - description : str
+        - exits : dict
+        - inventory : dict
+        - characters : dict
+        + __init__(name,description) -> None
+        + get_exit(direction) -> Room
+        + get_exit_string() -> str
+        + get_long_description() -> str
+        + get_inventory() -> str
     }
     
     class Player {
-        -name: str
-        -inventory: list
-        -current_room: Room
-        +take_item(item)
-        +drop_item(item)
-        +move(direction)
+        - name : str
+        - inventory : dict
+        - current_room : Room
+        - max_weight : float
+        - money : int
+        - history : list
+        - talked_to_max : bool
+        - maxou_room_unlocked : bool
+        - casier_opened : bool
+        - hunted_by_joseph/jolyne : bool
+        - quest_manager : QuestManager
+        + __init__(name,max_weight) -> None
+        + get_current_weight() -> float
+        + move(direction) -> bool
+        + get_history() -> str
+        + get_inventory() -> str
+        + add_reward(reward_text) -> bool
     }
     
     class Command {
-        -action: str
-        -parameter: str
-        +parse()
-        +execute()
+        - command_word : str
+        - help_string : str
+        - action : function
+        - number_of_parameters : int
+        - category : str
+        + __init(command_word,help_string,action,number_of_parameters,category) -> None
+        + __str__() -> str
     }
     
     class Action {
-        -type: str
-        +perform()
+        - aliases : dict
+        + setup(self) -> None
+        + go(game,list_of_words,num_params) -> bool/str
+        + talk(game,list_of_words,num_params) -> bool/str
+        + take(game,list_of_words,num_params) -> bool/str
+        + drop(game,list_of_words,num_params) -> bool
+        + look(game,list_of_words,num_params) -> bool
+        + check(game,list_of_words,num_params) -> bool
+        + back(game,list_of_words,num_params) -> bool
+        + help_help(game,list_of_words,num_params) -> bool
+        + quit(game,list_of_words,num_params) -> bool
     }
     
     class Item {
-        -name: str
-        -description: str
+        - name : str
+        - description : str
+        - weight : float
+        + __init__(name,description,weight) -> None
+        + __str__() -> str
     }
+
+    class Instrument {
+        - effect : str
+        + __init__(name,desc,weight,effect) -> None
+        + __str__() -> str
+    }
+
     
     class Character {
-        -name: str
-        -location: Room
-        +talk_to()
-        +give_quest()
+        - name : str
+        - description : str
+        - current_room : Room
+        - msgs : list
+        - immobile : bool
+        - patrol_rooms : list
+        - is_patrolling : bool
+        - escape_phrases : list 
+        + __init__(arguments) -> None
+        + __str__() -> str
+        + get_msg() -> str
+        + move() -> bool
     }
     
     class Quest {
-        -title: str
-        -description: str
-        -reward: int
-        +is_completed()
+        - title : str
+        - objectives : list
+        - is_completed : bool
+        - reward : str
+        + activate() -> None
+        + complete_objective(objective,player) -> bool
+        + get_status() -> str
+    }
+
+    class QuestManager {
+        - quests : list
+        - active_quests : list
+        + add_quest(quest) -> None
+        + check_room_objectives(room_mane) -> None
+        + show_quests() -> None
     }
     
-    Game --> Player
-    Game --> Room
-    Player --> Room
-    Player --> Item
-    Room --> Character
-    Character --> Quest
-    Command --> Action
+    Game *-- Player
+    Game *-- Room
+    Game *-- Action
+    Game *-- Command
+    Room *-- Character
+    Room *-- Item
+    Player *-- Room
+    Player *-- Item
+    Game *-- Quest
+    Game *-- QuestManager
+    Instrument `-- Item
+    
+
 ```
 
 ## Perspectives d'améliorations
-## Perspectives d'améliorations
-
-
-
-
-## Structuration
 
 
