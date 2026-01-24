@@ -64,11 +64,12 @@ class Actions:
             print(f"Commande '{command_word}' : nombre de paramètres incorrect.")
             return False
 
-        user_input = list_of_words[1].lower()
+        user_input = list_of_words[1]
+        user_input_lower = user_input.lower()
         
         # Check for special exits first (like "comptoir")
-        if hasattr(player.current_room, 'special_exits') and user_input in player.current_room.special_exits:
-            destination = player.current_room.special_exits[user_input]
+        if hasattr(player.current_room, 'special_exits') and user_input_lower in player.current_room.special_exits:
+            destination = player.current_room.special_exits[user_input_lower]
             player.history.append(player.current_room)
             player.current_room = destination
             print(player.current_room.get_long_description())
@@ -94,7 +95,7 @@ class Actions:
 
         if direction_norm is None:
             print(
-                f"\n cherie t'y es contre sens, dirait sch donc'{user_input}' est FAUX ah nn pas valide plutôt. Va là bas tu verras c'est mimi : {', '.join(possible)}. il y a des licornes et des arc-en-ciel.\n"
+                f"\nLa direction '{user_input}' n'est pas valide. Les directions possibles sont : {', '.join(possible)}.\n"
             )
             return False
 
