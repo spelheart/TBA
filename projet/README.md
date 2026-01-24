@@ -31,9 +31,9 @@ Le jeu est peuplé de différents personnages avec lesquels vous devez intéragi
 
 - **Victoria :** l'intêret romantique du protagoniste
 - **Sophie :** La meilleure amie de Victoria (qui ne l'apprécie pas tant que ça en réalité)
-- **Max :** Un mec louche de l"école qui donne les missions au protagoniste
+- **Max :** Un mec louche de l'école qui donne les missions au protagoniste
 - **Lucas :** Le meilleur ami du protagoniste, une source précieuse d'informations
-- **JP et l'autre :** Des personnages secondaires qui donnent du travail au protagoniste
+- **JP et Patoche :** Des personnages secondaires qui donnent du travail au protagoniste
 
 ---
 
@@ -89,14 +89,14 @@ Le jeu se contrôle via une série de commandes textuelles simples :
 
 Le projet suit une architecture orientée objet avec les classes suivantes :
 
-- `game.py` / `Game` : description de l'environnement, interface avec le joueur ;
-- `room.py` / `Room` : propriétés génériques d'un lieu  ;
-- `player.py` / `Player` : le joueur ;
-- `command.py` / `Command` : les consignes données par le joueur ;
-- `actions.py` / `Action` : les interactions entre .
-- `item.py` / `Item` : .
-- `character.py` / `Character` : .
-- `quest.py` / `Quest` : .
+- `game.py` / `Game` : Description de l'environnement, interface avec le joueur ;
+- `room.py` / `Room` : Structure des lieux et des sorties ;
+- `player.py` / `Player` : Caractéristiques et inventaire joueur ;
+- `command.py` / `Command` : Consignes données par le joueur ;
+- `actions.py` / `Action` : Exécution logique des commandes ;
+- `item.py` / `Item`, `Instrument` : Objets et instruments de musique ;
+- `character.py` / `Character` : Comportements et déplacement des PNJ ;
+- `quest.py` / `Quest`, `QuestManager` : Système complet de missions narratives ;
 
 ### Diagramme de classes
 
