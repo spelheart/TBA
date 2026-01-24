@@ -19,7 +19,7 @@ Votre objectif ultime est de **séduire Victoria**, une élève du lycée. Pour 
 
 Pour progresser, vous devez intéragir avec l'environnement et les personnages pour :
 
-- Entrer en contact avec Max, un mec louche de l'école
+- Entrer en contact avec Maxou, un mec louche de l'école
 - Mener l'enquête pour trouver le journal intime de Victoria
 - Prendre des risques en volant les copies d'examen
 
@@ -29,12 +29,14 @@ Pour progresser, vous devez intéragir avec l'environnement et les personnages p
 
 Le jeu est peuplé de différents personnages avec lesquels vous devez intéragir :
 
-- **Victoria :** l'intêret romantique du protagoniste
+- **Victoria :** L'intêret romantique du protagoniste
 - **Sophie :** La meilleure amie de Victoria (qui ne l'apprécie pas tant que ça en réalité)
-- **Max :** Un mec louche de l'école qui donne les missions au protagoniste
+- **Maxou :** Un mec louche de l'école qui donne les missions au protagoniste
 - **Lucas :** Le meilleur ami du protagoniste, une source précieuse d'informations
 - **JP et Patoche :** Des personnages secondaires qui donnent du travail au protagoniste
-
+- **Proviseur :** Le proviseur du lycée 
+- **professeur Koro :** Un professeur de l'école
+- **Tunnel :** Un boug qui aide le protagoniste à passer de l'autre coté du terrain pour pas se prendre une balle
 ---
 
 ### Environnement du jeu
@@ -42,12 +44,14 @@ Le jeu est peuplé de différents personnages avec lesquels vous devez intéragi
 Le lycée est composé de nombreux lieux explorables indispensables à l'intrigue (et d'autres un peu moins) : 
 
 - **Zones communes :** Entrée, hall, caféteria, escaliers, toit
-- **Zones de cours :** Salles de cours (1 et 2), salle de musique, salle d'art, gymnase
-- **Zones spéciales :** Couloirs (en trois parties), salle des profs, pièce secrète, magasin de Max
+- **Zones de cours :** Salles de cours (1 et 2), salle de musique, gymnase
+- **Zones spéciales :** Couloirs (en trois parties), salle des profs, pièce secrète, magasin de Maxou, comptoir de la caféteria 
 
 ### Conditions de victoire/défaite
 
 #### Victoire
+
+
 
 #### Défaite 
 
@@ -84,6 +88,10 @@ Le jeu se contrôle via une série de commandes textuelles simples :
 | `back` | — | Revenir à la salle précédente |
 | `help` | — | Liste complète des commandes |
 | `quit` | — | Quitter le jeu |
+| `help_help` | — | Aider le protagoniste |
+| `buy` | — | Acheter |
+| `up` | — | Se déplacer vers le haut |
+| `down` | — | Se déplacer vers le bas |
 
 ### Structuration
 
@@ -174,6 +182,8 @@ classDiagram
         + back(game,list_of_words,num_params) -> bool
         + help_help(game,list_of_words,num_params) -> bool
         + quit(game,list_of_words,num_params) -> bool
+        + eat(game,list_of_words,num_params) -> bool
+        + give(game,list_of_words,num_params) -> bool
     }
     
     class Item {
