@@ -44,6 +44,8 @@ class Player:  # pylint: disable=too-many-instance-attributes
         # Track if being hunted by Joseph/Jolyne - individual flags
         self.hunted_by_joseph = False
         self.hunted_by_jolyne = False
+        # Track if proviseur has given money
+        self.proviseur_gave_money = False
 
     def get_current_weight(self) -> float:
         """Return the total weight of items currently carried by the player."""

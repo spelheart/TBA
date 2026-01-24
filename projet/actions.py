@@ -64,13 +64,27 @@ class Actions:
             print(f"Commande '{command_word}' : nombre de paramètres incorrect.")
             return False
 
-        user_input = list_of_words[1]
+        user_input = list_of_words[1].lower()
+        
+        # Check for special exits first (like "comptoir")
+        if hasattr(player.current_room, 'special_exits') and user_input in player.current_room.special_exits:
+            destination = player.current_room.special_exits[user_input]
+            player.history.append(player.current_room)
+            player.current_room = destination
+            print(player.current_room.get_long_description())
+            return True
+        
         # Récupère les directions possibles dans la salle courante
         exits = player.current_room.exits
         possible = []
         for canonique, alias_list in game.actions.aliases.items():
             if canonique in exits and exits[canonique]:
                 possible.extend(alias_list)
+        
+        # Add special exits to possible directions
+        if hasattr(player.current_room, 'special_exits'):
+            possible.extend(player.current_room.special_exits.keys())
+        
         # Vérifie si l'entrée utilisateur correspond à une direction possible
         direction_norm = None
         for canonique, alias_list in game.actions.aliases.items():
@@ -665,6 +679,16 @@ class Actions:
         player = game.player
         room = player.current_room
 
+        # Handle name aliases for easier typing
+        name_aliases = {
+            "Koro": "Professeur Koro",
+            "koro": "Professeur Koro",
+        }
+        
+        # Convert alias to full name if it exists
+        if character_name in name_aliases:
+            character_name = name_aliases[character_name]
+
         # Check if the character is in the room
         if character_name not in room.inventory:
             print(f"\nIl n'y a pas de personnage nommé '{character_name}' ici.\n")
@@ -776,8 +800,8 @@ class Actions:
                             quete_finale.activate()
                             player.quest_manager.active_quests.append(quete_finale)
 
-                        # Maxou's instruction (WITHOUT warning about taking only one item)
-                        print("Maxou: Voilà, tu peux descendre au sud.")
+                        # Maxou's instruction 
+                        print("Maxou: Voilà, tu peux y aller maintenant.")
                         print("Maxou: Prends ce dont tu as besoin pour impressionner Victoria.")
                         print("Maxou: Bonne chance mec.\n")
 
@@ -800,9 +824,25 @@ class Actions:
                 return True
             else:
                 player.talked_to_tunnel = True
-                # Display the initial dialogue via get_msg()
+                # Display the initial dialogue (first message only)
+                if character.msgs and len(character.msgs) > 0:
+                    print(f"\n{character.msgs[0]}\n")
+                return True
+
+        # Special handling for Proviseur - gives money first time with disdain
+        if character_name == "Proviseur":
+            if not player.proviseur_gave_money:
+                # First time talking - give money with condescension
+                player.proviseur_gave_money = True
+                player.money += 5
+                print("\nLe proviseur vous regarde de haut en bas avec un sourire suffisant. Proviseur: Ah, encore un élève démuni qui ne peut même pas s'offrir un repas décent... *Il soupire théâtralement* En tant que proviseur EXTRÊMEMENT généreux et bienveillant de cet établissement, je ne peux pas laisser mes élèves mourir de faim. Ce serait mauvais pour notre réputation. *Il sort son portefeuille en cuir avec lenteur calculée* Tenez, je vous donne 5$. Cinq dollars de MA poche personnelle ! Vous vous rendez compte de ma MAGNANIMITÉ ? De ma BONTÉ sans limites ? *Il vous tend l'argent du bout des doigts* J'espère que vous apprécierez ce geste d'une rare générosité. Peu de proviseurs feraient autant pour leurs élèves. N'oubliez jamais ce que j'ai fait pour vous.\n")
+                print(f"💰 Vous recevez 5$ ! Argent total : {player.money}$\n")
+                return True
+            else:
+                # Already gave money, normal dialogue
                 if hasattr(character, "get_msg"):
                     print(f"\n{character.get_msg()}\n")
+                return True
 
         # Special handling for Patoche and JP - bullies
         if character_name in ["Patoche", "JP"]:
@@ -870,10 +910,7 @@ class Actions:
             
             # Si les deux quêtes sont terminées, elle révèle le secret de Victoria
             if quete_exam_completed and quete_victoria_completed:
-                print("\nSophie: Oh salut ! Tu t'intéresses à ma *chère* amie Victoria ?")
-                print("Entre nous... elle chante horriblement mal. Genre vraiment catastrophique !")
-                print("La pauvre, elle en a tellement honte qu'elle s'entraîne en secret dans la salle de musique...")
-                print("Mais bon, c'est ma meilleure amie, donc je la soutiens *évidemment*... *soupir*\n")
+                print("\nSophie: Oh salut ! Tu t'intéresses à ma *chère* amie Victoria ? Entre nous... elle chante horriblement mal. Genre vraiment catastrophique ! La pauvre, elle en a tellement honte qu'elle s'entraîne en secret dans la salle de musique... Mais bon, c'est ma meilleure amie, donc je la soutiens *évidemment*... *soupir*\n")
             else:
                 # Sinon, elle joue la reine du monde
                 if hasattr(character, "get_msg"):
@@ -1069,6 +1106,109 @@ class Actions:
                 f"\n🎵 Vous jouez du {instrument_name}... La musique résonne dans la salle.\n"
             )
 
+        return True
+
+    def buy(game, list_of_words, number_of_parameters):
+        """Permet au joueur d'acheter un sandwich au comptoir de la cafétéria.
+        Usage: `buy sandwich`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        item_name = list_of_words[1].lower()
+        player = game.player
+        room = player.current_room
+
+        # Check if trying to buy sandwich
+        if item_name != "sandwich":
+            print(f"\nVous ne pouvez pas acheter '{item_name}'.\n")
+            return False
+
+        # Check if at comptoir
+        if room.name != "Comptoir":
+            print("\nVous devez être au comptoir pour acheter un sandwich. Allez au nord depuis la cafétéria.\n")
+            return False
+
+        # Check if player has enough money
+        if player.money < 3:
+            print(f"\nVous n'avez pas assez d'argent. Le sandwich coûte 3$ et vous avez {player.money}$.\n")
+            return False
+
+        # Check if player already has a sandwich
+        if "sandwich" in player.inventory:
+            print("\nVous avez déjà un sandwich. Mangez-le d'abord avant d'en acheter un autre !\n")
+            return False
+
+        # Check if Mission impossible quest is completed - GAME OVER if buying sandwich after
+        if player.quest_manager:
+            for quest in player.quest_manager.get_all_quests():
+                if quest.title == "Mission impossible" and quest.is_completed:
+                    print("\n" + "=" * 60)
+                    print("💀 GAME OVER 💀")
+                    print("=" * 60)
+                    print("\nVous décidez d'acheter un sandwich à 3$...\n")
+                    print("Alors que vous aviez ENFIN assez d'argent pour offrir")
+                    print("le cadeau parfait à Victoria et conquérir son cœur,")
+                    print("vous préférez vous goinfrer plutôt que de faire plaisir")
+                    print("à votre bien-aimée.\n")
+                    print("Victoria apprend que vous avez dépensé votre argent")
+                    print("dans un vulgaire sandwich alors que vous étiez censé")
+                    print("lui offrir le cadeau de ses rêves...\n")
+                    print("Elle vous regarde avec dégoût et mépris.")
+                    print("'Tu n'es qu'un égoïste pathétique !'\n")
+                    print("💔 Vous avez perdu toute chance de conquérir Victoria.")
+                    print("La gourmandise a eu raison de l'amour...\n")
+                    print("=" * 60)
+                    return "LOSE"
+
+        # Buy the sandwich and add to inventory
+        from item import Item
+        player.money -= 3
+        sandwich = Item(
+            "sandwich",
+            "un délicieux sandwich de la cafétéria",
+            0.2
+        )
+        player.inventory["sandwich"] = sandwich
+        
+        print("\n🥪 L'employé vous présente un sandwich appétissant.\n")
+        print("Employé: Ça fait 3$.\n")
+        print("💰 Vous achetez le sandwich pour 3$.\n")
+        print("💡 Tu préfères manger ou séduire Vic à toi de voir ?\n")
+        print("Le sandwich est maintenant dans votre inventaire. Utilisez 'eat sandwich' pour le manger.\n")
+        print(f"💰 Argent restant : {player.money}$\n")
+        return True
+
+    def eat(game, list_of_words, number_of_parameters):
+        """Permet au joueur de manger un item comestible.
+        Usage: `eat <item>`
+        """
+        l = len(list_of_words)
+        if l != number_of_parameters + 1:
+            command_word = list_of_words[0]
+            print(MSG1.format(command_word=command_word))
+            return False
+
+        item_name = list_of_words[1].lower()
+        player = game.player
+
+        # Check if item is in inventory
+        if item_name not in player.inventory:
+            print(f"\nVous n'avez pas de {item_name} dans votre inventaire.\n")
+            return False
+
+        # Check if it's a sandwich
+        if item_name != "sandwich":
+            print(f"\nVous ne pouvez pas manger {item_name}.\n")
+            return False
+
+        # Eat the sandwich
+        player.inventory.pop("sandwich")
+        print("\n🥪 Vous dévorez le sandwich rapidement.\n")
+        print("Mmmh, c'était délicieux ! Mais vous auriez pu économiser cet argent pour séduire Vic...\n")
         return True
 
     def climb(game, list_of_words, number_of_parameters):

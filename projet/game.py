@@ -273,6 +273,22 @@ class Game:
             "Interaction",
         )
         self.commands["give"] = give_cmd
+        buy_cmd = Command(
+            "buy",
+            " sandwich : acheter un sandwich au comptoir (3$)",
+            Actions.buy,
+            1,
+            "Interaction",
+        )
+        self.commands["buy"] = buy_cmd
+        eat_cmd = Command(
+            "eat",
+            " <item> : manger un item comestible de votre inventaire",
+            Actions.eat,
+            1,
+            "Interaction",
+        )
+        self.commands["eat"] = eat_cmd
 
         # Setup rooms
         hall_entree = Room(
@@ -293,8 +309,7 @@ class Game:
         self.rooms.append(couloir1)
         salle1 = Room(
             "Salle de cours tout ce qu'il y a de plus banal",
-            "une salle de cours, tout ce qu'il y a de plus banal. Y'a un placard à balais "
-            "dans un coin, mais sinon rien d'intéressant.",
+            "une salle de cours, tout ce qu'il y a de plus banal. Rien d'intéressant à voir ici.",
         )
         self.rooms.append(salle1)
         salle2 = Room(
@@ -363,8 +378,24 @@ class Game:
             "L'ambiance est électrique !",
         )
         self.rooms.append(gym)
-        cafet = Room("Cafétéria", ".")
+        cafet = Room(
+            "Cafétéria",
+            "la cafétéria du lycée, un espace bruyant et animé où les élèves se rassemblent "
+            "pour manger et discuter. Un long comptoir vitré présente les plats du jour, "
+            "des sandwichs, des salades et des desserts. L'odeur de frites et de pizza "
+            "flotte dans l'air. Des tables rondes sont dispersées dans la salle, certaines "
+            "déjà occupées par des groupes d'élèves bavards. "
+            "Vous pouvez aller au comptoir avec 'go comptoir' pour acheter à manger."
+        )
         self.rooms.append(cafet)
+
+        comptoir = Room(
+            "Comptoir",
+            "le comptoir de la cafétéria. Vous êtes face à l'employé qui attend votre commande. "
+            "Un menu affiche les prix : Sandwich 3$. Vous pouvez acheter avec 'buy sandwich'. "
+            "Utilisez 'go cafétéria' pour retourner dans la cafétéria."
+        )
+        self.rooms.append(comptoir)
 
         salle_secrete = Room(
             "Salle secrète",
@@ -429,6 +460,10 @@ class Game:
             "D": None,
         }
         cafet.exits = {"N": None, "E": None, "S": couloir1, "O": None}
+        cafet.special_exits = {"comptoir": comptoir}  # Sortie spéciale non listée
+        comptoir.exits = {"N": None, "E": None, "S": None, "O": None}
+        comptoir.special_exits = {"cafeteria": cafet, "cafétéria": cafet}  # Retour à la cafétéria
+        
         salle_secrete.exits = {
             "N": None,
             "E": None,
@@ -590,10 +625,7 @@ class Game:
             "la meilleure amie de Victoria (en vrai elle l'aime pas)",
             couloir2,
             [
-                "Sophie ? C'est MADEMOISELLE Sophie pour toi.",
-                "Je suis LA meilleure amie de Victoria. LA seule qui compte vraiment.",
-                "Alors si tu veux approcher Victoria, tu dois d'abord ME convaincre.",
-                "Pour l'instant, tu ne m'impressionnes pas du tout.",
+                "Sophie ? C'est MADEMOISELLE Sophie pour toi. Je suis LA meilleure amie de Victoria. LA seule qui compte vraiment. Alors si tu veux approcher Victoria, tu dois d'abord ME convaincre. Pour l'instant, tu ne m'impressionnes pas du tout.",
             ],
             immobile=True,
         )
@@ -629,7 +661,7 @@ class Game:
         bullies_dialogue = "Patoche: Putain JP, on est dans la merde pour l'exam de dans 2 jours...\nJP: Ouais grave, si on rate on va finir aux rattrapages et on va louper le voyage d'été avec l'école !\nPatoche: Faut absolument qu'on trouve un moyen de...\nJP: *Ils s'arrêtent brusquement et te remarquent*\nPatoche et JP: Tiens, tiens... Regarde qui voilà.\nPatoche: On a un petit boulot pour toi, le loser.\nJP: Tu vas nous trouver les sujets d'examen en avance. Ils sont dans un casier dans la salle des profs, verrouillé par un code à 4 chiffres.\nPatoche: Et ne t'avise pas de refuser... sinon on te dépouille de TOUT ce que tu as.\nJP: On te filera du fric après, on va les revendre aux autres élèves. Maintenant bouge-toi !"
 
         # Tunnel NPC who talks a lot
-        tunnel_dialogue = "Tunnel: Salut ! Tu regardais le match ? Ouais c'était fou ! Enfin bon pas encore, mais ça va commencer. Tu sais, je viens à tous les matchs depuis 3 ans. Trois ans ! Mon équipe préférée joue aujourd'hui. Bon elle perd tout le temps mais bon, je soutiens quand même. L'autre jour tu sais, il y avait ce gars... Maxou c'est son nom je crois, il regardait le match sur les gradins. Pas mal ce mec. Il regarde vraiment attentivement tu sais, il bouge pas beaucoup mais il regarde. C'est impressionnant de regarder quelqu'un regarder un match. Enfin bref, le truc c'est que le terrain il est dangereux. Très dangereux. Pas pour les joueurs hein, pour ceux qui traînent au milieu. Zzzzt ! Un ballon qui fait pchhhh en pleine face, c'est violent ce jeu ! Ça m'est presque arrivé une fois. Une fois ! J'ai failli me prendre un ballon en pleine tête. Peut tu imaginer ? Moi qui suis là tranquille, boom ballon en pleine gueule. C'est dingue. Donc si tu veux vraiment parler à Maxou sans te faire écrabouiller par un ballon, faut pas foncer direct sur le terrain comme un débile. Non non non, c'est pas bon ça. Tu dois contourner, contourner par le côté comme je le fais moi depuis 3 ans. Ouais depuis 3 ans je contourne. C'est pas trop difficile mais ça prend du temps. Du temps que tu dois pas gaspiller en courant comme un fou. Si tu veux vraiment lui parler, je peux te montrer le chemin. Je connais bien je te dis. Allez viens, je vais te guider pas à pas. C'est pas compliqué mais faut pas se presser. Vraiment pas. Tu vas voir, ça va être cool."
+        tunnel_dialogue = "Tunnel: Salut ! Tu regardais le match ? Ouais c'était fou ! Enfin bon pas encore, mais ça va commencer. Tu sais, je viens à tous les matchs depuis 3 ans. Trois ans ! Mon équipe préférée joue aujourd'hui. Bon elle perd tout le temps mais bon, je soutiens quand même. L'autre jour tu sais, il y avait ce gars... Maxou c'est son nom je crois, il regardait le match sur les gradins. Pas mal ce mec. Il regarde vraiment attentivement tu sais, il bouge pas beaucoup mais il regarde. C'est impressionnant de regarder quelqu'un regarder un match. Enfin bref, le truc c'est que le terrain il est dangereux. Très dangereux. Pas pour les joueurs hein, pour ceux qui traînent au milieu. Zzzzt ! Un ballon qui fait pchhhh en pleine face, c'est violent ce jeu ! Ça m'est presque arrivé une fois. Une fois ! J'ai failli me prendre un ballon en pleine tête. Peut tu imaginer ? Moi qui suis là tranquille, boom ballon en pleine gueule. C'est dingue. Donc si tu veux vraiment parler à Maxou sans te faire écrabouiller par un ballon, faut pas foncer direct sur le terrain comme un débile. Non non non, c'est pas bon ça. Tu dois contourner, contourner par le côté comme je le fais moi depuis 3 ans. Ouais depuis 3 ans je contourne. C'est pas trop difficile mais ça prend du temps. Du temps que tu dois pas gaspiller en courant comme un fou. Si tu veux vraiment lui parler, je vais t'aider à atteindre Maxou. Je connais bien je te dis. Tu verras, c'est pas compliqué mais faut juste faire gaffe aux ballons qui volent partout. Allez, si t'as besoin d'aller voir Maxou, fais-le maintenant avant que ça devienne trop chaotique !"
 
         tunnel_dialogue_return = "Tunnel: Ah te revoilà ! Alors, ça a été avec Maxou ? Il a l'air sympa mec. Enfin bon sympa c'est un grand mot. En tout cas il regarde attentivement hein. Mais écoute, tu peux pas partir maintenant, le match vient de commencer ! Regarde la foule, l'énergie, c'est dingue ! Les joueurs sont en feu ! L'équipe adverse a déjà marqué deux points, et notre équipe riposte... OUIIIII GOAL ! Tu vois ? T'aurais raté ça si tu t'en allais ! C'est ça la beauté du match en direct mec. Pas comme à la télé où tu peux mettre en pause. Non, ici c'est du live, du vrai ! Regarde ce buteur... c'est un genie ! Il dribble comme un fou, il esquive, il feinte... C'est de l'art ! Et puis tu sais quoi ? Le terrain est encore dangereux hein. Y a des ballons qui volent partout, des gens qui crient, qui sautent... C'est chaotique mais c'est magnifique. Et puis honnêtement, si tu sors du gymnase pendant que tu es entré faire une truffe, ça va pas passer inaperçu tu sais. Faut rester un peu, regarder la fin de la première mi-temps au moins. C'est par respect pour le jeu, pour les joueurs, pour moi aussi franchement ! Allez reste, on regarde ensemble. Je te montre les meilleurs joueurs, les tactiques... C'est clairement plus intéressant qu'à l'extérieur ! Et puis qui sait, peut-être que Maxou va demander comment c'était dehors ou un truc du genre..."
 
@@ -656,7 +688,9 @@ class Game:
             "Professeur Koro",
             "un professeur strict qui fait sa ronde, tkt t'as pas le temps de le voir bouger",
             salle_profs,
-            ["Professeur Koro: *vous jette un regard méfiant*"],
+            [
+                "Professeur Koro: *soupir agacé* Qu'est-ce que tu fais là ? La salle des professeurs est un espace réservé au PERSONNEL. C'est ici qu'on se repose entre deux cours éprouvants. Tu ne vois pas que je n'ai absolument AUCUNE envie de te parler ? Dégage avant que je te colle une retenue. File d'ici, maintenant !"
+            ],
             immobile=True,  # Initialement immobile
             patrol_rooms=[couloir2, salle_profs],
         )
@@ -668,9 +702,21 @@ class Game:
             [tunnel_dialogue, tunnel_dialogue_return],
             immobile=True,
         )
+        
+        proviseur = Character(
+            "Proviseur",
+            "le proviseur de l'établissement, un homme d'âge moyen en costume-cravate impeccable, toujours affichant un sourire condescendant",
+            cafet,
+            [
+                "Proviseur: Bonjour jeune homme. Je suis le proviseur de cet établissement prestigieux. J'espère que vous appréciez nos installations de qualité supérieure.",
+                "Proviseur: J'ai beaucoup de travail. Les responsabilités d'un proviseur sont immenses, vous savez.",
+            ],
+            immobile=True,
+        )
 
         hall_entree.inventory[joseph.name] = joseph
         cafet.inventory[jolyne.name] = jolyne
+        cafet.inventory[proviseur.name] = proviseur
         toit.inventory[victoria.name] = victoria
         couloir2.inventory[sophie.name] = sophie
         gym.inventory[maxou.name] = maxou
@@ -686,6 +732,7 @@ class Game:
             sophie,
             maxou,
             tunnel,
+            proviseur,
             lucas,
             patoche,
             jp,
