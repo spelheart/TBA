@@ -228,10 +228,10 @@ classDiagram
     Game *-- Room
     Game *-- Actions
     Game *-- Command
-    Room °-- Character
-    Room °-- Item
-    Player °-- Room
-    Player °-- Item
+    Room *-- Character
+    Room *-- Item
+    Player *-- Room
+    Player *-- Item
     Game *-- Quest
     Game *-- QuestManager
     Instrument `-- Item
