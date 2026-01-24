@@ -14,9 +14,9 @@
 
 ## 📚 Table des matières
 
-1. [Le guide Utilisateur](#guide-utilisateur)
-2. [Le guide Développeur](#guide-développeur)
-3. [Les perspectives de développement](#perspectives-de-développement)
+1. [Le guide utilisateur](#le-guide-utilisateur)
+2. [Le guide développeur](#le-guide-développeur)
+3. [Les perspectives de développement](#les-perspectives-de-développement)
 
 ## Le guide utilisateur
 
