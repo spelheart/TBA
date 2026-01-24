@@ -100,79 +100,143 @@ Le projet suit une architecture orientée objet avec les classes suivantes :
 
 ### Diagramme de classes
 
-### Diagramme de classes
-
 ``` mermaid
+
 classDiagram
+
     class Game {
-        +start()
-        +run()
-        +end()
+        - finished : bool
+        - rooms : list
+        - commands : dict
+        - player : Player
+        - actions : Actions
+        - characters : list
+        + __init__(self) -> None
+        + setup(self) -> None
+        + play(self) -> None
+        + win(self) -> bool
+        + loose(self) -> bool
+        + print_welcome(self) -> None
     }
     
     class Room {
-        -name: str
-        -description: str
-        -exits: dict
-        +get_description()
-        +get_exits()
+        - name : str
+        - description : str
+        - exits : dict
+        - inventory : dict
+        - characters : dict
+        + __init__(name,description) -> None
+        + get_exit(direction) -> Room
+        + get_exit_string() -> str
+        + get_long_description() -> str
+        + get_inventory() -> str
     }
     
     class Player {
-        -name: str
-        -inventory: list
-        -current_room: Room
-        +take_item(item)
-        +drop_item(item)
-        +move(direction)
+        - name : str
+        - inventory : dict
+        - current_room : Room
+        - max_weight : float
+        - money : int
+        - history : list
+        - talked_to_max : bool
+        - maxou_room_unlocked : bool
+        - casier_opened : bool
+        - hunted_by_joseph/jolyne : bool
+        - quest_manager : QuestManager
+        + __init__(name,max_weight) -> None
+        + get_current_weight() -> float
+        + move(direction) -> bool
+        + get_history() -> str
+        + get_inventory() -> str
+        + add_reward(reward_text) -> bool
     }
     
     class Command {
-        -action: str
-        -parameter: str
-        +parse()
-        +execute()
+        - command_word : str
+        - help_string : str
+        - action : function
+        - number_of_parameters : int
+        - category : str
+        + __init(command_word,help_string,action,number_of_parameters,category) -> None
+        + __str__() -> str
     }
     
     class Action {
-        -type: str
-        +perform()
+        - aliases : dict
+        + setup(self) -> None
+        + go(game,list_of_words,num_params) -> bool/str
+        + talk(game,list_of_words,num_params) -> bool/str
+        + take(game,list_of_words,num_params) -> bool/str
+        + drop(game,list_of_words,num_params) -> bool
+        + look(game,list_of_words,num_params) -> bool
+        + check(game,list_of_words,num_params) -> bool
+        + back(game,list_of_words,num_params) -> bool
+        + help_help(game,list_of_words,num_params) -> bool
+        + quit(game,list_of_words,num_params) -> bool
     }
     
     class Item {
-        -name: str
-        -description: str
+        - name : str
+        - description : str
+        - weight : float
+        + __init__(name,description,weight) -> None
+        + __str__() -> str
     }
+
+    class Instrument {
+        - effect : str
+        + __init__(name,desc,weight,effect) -> None
+        + __str__() -> str
+    }
+
     
     class Character {
-        -name: str
-        -location: Room
-        +talk_to()
-        +give_quest()
+        - name : str
+        - description : str
+        - current_room : Room
+        - msgs : list
+        - immobile : bool
+        - patrol_rooms : list
+        - is_patrolling : bool
+        - escape_phrases : list 
+        + __init__(arguments) -> None
+        + __str__() -> str
+        + get_msg() -> str
+        + move() -> bool
     }
     
     class Quest {
-        -title: str
-        -description: str
-        -reward: int
-        +is_completed()
+        - title : str
+        - objectives : list
+        - is_completed : bool
+        - reward : str
+        + activate() -> None
+        + complete_objective(objective,player) -> bool
+        + get_status() -> str
+    }
+
+    class QuestManager {
+        - quests : list
+        - active_quests : list
+        + add_quest(quest) -> None
+        + check_room_objectives(room_mane) -> None
+        + show_quests() -> None
     }
     
-    Game --> Player
-    Game --> Room
+    Game *-- Player
+    Game *-- QuestManager
+    QuestManager *-- Quest
+    Instrument `-- Item
+    Room °-- Item
+    Room °-- Character
     Player --> Room
-    Player --> Item
-    Room --> Character
-    Character --> Quest
-    Command --> Action
+    Character --> Room
+    Room --> Room
+    Command ..> Actions
+
 ```
 
 ## Perspectives d'améliorations
-## Perspectives d'améliorations
-
-
-
-
-## Structuration
 
 
