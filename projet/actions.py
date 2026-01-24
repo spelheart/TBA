@@ -1860,7 +1860,7 @@ class Actions:
                 return False
 
             # Check if it's the RIGHT gift (bague en or blanc avec pierre bleue)
-            if item_name == "bague":
+            if item_name == "bague en or blanc sertie d'une pierre bleue":
                 # SUCCESS! The player found the right gift
                 item = player.inventory.pop(item_name)
                 
