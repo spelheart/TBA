@@ -1,4 +1,4 @@
-# Nom du jeu 
+# Victoria's Secret Love
 
 **Module :** Apprentissage de la programmation avec PYTHON et C
 
@@ -115,7 +115,6 @@ Le jeu se contrôle via une série de commandes textuelles simples :
 Voici les pièces que vous avez visitées :
 - Entrée de l'école
 
-
 Vous êtes dans le hall d'entrée du lycée, où des casiers métalliques sont installés pour y ranger vos chaussures d'extérieur, ou votre parapluie, ou encore décharger une part de votre sac à dos parcequ'on est pas hulk et porter 18 manuels c'est pas un objectif de vie.
 
 > look
@@ -125,13 +124,8 @@ La pièce contient :
 > talk Joseph
 
 ⚠️ Joseph: Tu aurais pas dû faire ça...
-
 Il te prend en chasse!
-
-
 Salut, je m'appelle Joseph. Bienvenue en enfer...
-
-
 ```
 
 ### Structuration
