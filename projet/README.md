@@ -226,7 +226,7 @@ classDiagram
     
     Game *-- Player
     Game *-- Room
-    Game *-- Actions
+    Game *-- Action
     Game *-- Command
     Room *-- Character
     Room *-- Item
