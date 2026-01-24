@@ -166,7 +166,7 @@ class Actions:
             player.tunnel_talked_this_visit = False
         
         # GYMNASE SECURITY: Check if leaving gym without talking to Tunnel (only after talking to Maxou)
-        if old_room.name == "Gymnase" and player.current_room.name != "Gymnase":
+        if old_room.name == "Gymnase" and player.current_room.name != "Gymnase" and player.current_room.name != "Réserve de Maxou":
             # Only game over if they talked to Maxou and haven't talked to Tunnel on the way back
             if player.talked_to_max and not player.tunnel_talked_this_visit:
                 print(
