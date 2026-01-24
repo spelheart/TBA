@@ -57,7 +57,7 @@ Le lycée est composé de nombreux lieux explorables indispensables à l'intrigu
 
 ```bash
 git clone https://github.com/spelheart/TBA.git
-cd air_esiee_tba
+cd TBA
 ```
 
 #### Lancer le Jeu
